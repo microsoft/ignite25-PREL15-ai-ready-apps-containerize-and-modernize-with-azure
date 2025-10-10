@@ -1,4 +1,4 @@
-# AI Image Generation with Serverless GPUs on Azure Container Apps
+# Segment 1 — AI Image Generation with Serverless GPUs on Azure Container Apps
 
 ## Title
 Deploy an AI Image Generation App Using Serverless GPUs in Azure Container Apps
@@ -19,7 +19,7 @@ In this part, you will:
 ---
 
 ## Estimated Duration
-45–60 minutes
+45 minutes
 
 ---
 
@@ -318,25 +318,3 @@ Deploy the same application to multiple regions with GPU support and use Azure F
 
 ---
 
-# Answer Key (for Skillable Grading)
-
-**Q1.** Where in the Azure Portal do you enable GPU support when creating a Container App?  
-✅ In the Container tab, check the "Enable GPU" checkbox and select the GPU workload profile type
-
-**Q2.** What command shows GPU utilization inside the container console?  
-✅ `nvidia-smi`
-
-**Q3.** How can you reduce GPU cold start times in production?  
-✅ Enable minimum replicas, use artifact streaming, and implement model preloading
-
-**Q4.** Which regions currently support serverless GPU workload profiles?  
-✅ Sweden Central, East US 2, North Central US, West US 3 (check latest docs for updates)
-
-**Q5.** What is the GPU model provided by the Consumption-GPU-NC8as-T4 profile?  
-✅ NVIDIA T4 with 16GB GPU memory
-
-**Q6.** How do you properly clean up all resources in the Azure Portal?  
-✅ Navigate to Resource Groups, select the resource group, click "Delete resource group", and confirm by typing the name
-
-**Q7.** What container image is used in the GPU quickstart?  
-✅ `mcr.microsoft.com/k8se/gpu-quickstart:latest`
