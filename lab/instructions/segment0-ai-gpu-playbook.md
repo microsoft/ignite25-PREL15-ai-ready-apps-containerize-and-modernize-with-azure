@@ -1,5 +1,7 @@
 # Segment 0 — AI-Accelerated Azure Container Apps Playbook (15 minutes)
 
+> Note: This content is being covered via slides and live in session.
+
 > Audience: Practitioners who already understand Azure Container Apps fundamentals and need a fast, GPU-focused refresher before diving into the labs.
 
 ## Agenda Overview
