@@ -21,7 +21,7 @@ Learn how to deploy and scale AI image generation models using serverless GPU ca
 
 ### Segment 2: Modernizing Enterprise Applications with Azure OpenAI Integration (45m)
 Discover how to integrate Azure OpenAI services into existing containerized applications to add intelligent features while maintaining enterprise security and compliance.
-[View Segment Instructions](skillable_langchain_aca_lab 1.md)
+[View Segment Instructions](skillable_langchain_aca_lab_1.md)
 
 
 ### Segment 3: Ollama (30m)
