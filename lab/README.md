@@ -1,6 +1,24 @@
+# Pre-Day Lab for Ignite 2025
+
+## Generate Ready-to-Use Instructions
+
+Quick: assemble a single lab script (welcome + segments 0–5)
+
+If you prefer one combined lab file for instructor handouts or an in-VM copy, run the helper script to concatenate the individual segment markdown files into `lab/instructions/lab-script.md`.
+
+Run from the repository root (WSL / Linux):
+
+```bash
+# generate the combined file
+./lab/concat_lab_segments.sh
+```
+
+Then open or preview the generated file on the lab VM at `lab/lab-script.md` (for example, use `less`, `bat`, or open it in the VM's editor).
 
 
 These instructions support the instructor-led workshop **AI-Ready Apps: Containerize and Modernize with Azure**. The self-paced version is available in this repository for builders who want to explore GPU-powered Azure Container Apps, Ollama, and MCP session pools on their own schedule.
+
+
 
 ## Abstract
 
