@@ -6,6 +6,8 @@ These instructions support the instructor-led workshop **AI-Ready Apps: Containe
 
 Modernize containerized applications with Azure by combining serverless GPUs, Azure OpenAI, and open-source models. You will deploy image generation workloads, retrofit existing services with Azure OpenAI, operate Ollama as a self-hosted model server, stand up MCP shell session pools, and finish by launching the Goose open-source agent on Azure Container Apps.
 
+> [Click here to get to the lab instructions](./instructions/instructions.md)
+
 ## Pre-Requisites (Quick Check)
 
 - Laptop with modern Chromium-based browser and the ability to run Azure Cloud Shell or local CLI tools
