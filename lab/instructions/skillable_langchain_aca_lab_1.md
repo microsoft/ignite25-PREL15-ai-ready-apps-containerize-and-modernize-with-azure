@@ -1,4 +1,4 @@
-# LangChain + Azure Container Apps Dynamic Sessions
+# Segment 2 — LangChain + Azure Container Apps Dynamic Sessions
 
 ## Title
 Build a LangChain Agent with Azure Container Apps Dynamic Sessions (Code Interpreter)
@@ -8,22 +8,14 @@ Build a LangChain Agent with Azure Container Apps Dynamic Sessions (Code Interpr
 ## Lab Overview
 In this part, you will:
 - Provision an Azure Container Apps **Dynamic Session Pool** for Python code execution.
-- Connect the pool to a **LangChain agent** via the `langchain-azure-dynamic-sessions` package.
+- Connect the pool to a **LangChain agent** via the **langchain-azure-dynamic-sessions** package.
 - Expose a **FastAPI web API** with endpoints for natural language queries and file analysis.
 - Validate with tasks: math calculation, plotting, and CSV summarization.
 
 ---
 
-## Prerequisites
-- Active Azure subscription  
-- Azure CLI with Container Apps extension (`az extension add --name containerapp --upgrade --allow-preview true -y`)  
-- Python 3.10+ and Git installed locally  
-- Azure OpenAI resource with a deployed model (e.g., gpt-35-turbo or gpt-4)
-
----
-
 ## Estimated Duration
-45–75 minutes
+45 minutes
 
 ---
 
@@ -44,9 +36,9 @@ In this part, you will:
    
    Set up environment variables for your subscription ID, resource group name, and location. The resource group will contain all the resources for this lab.
    ```bash
-   SUB=$(az account show --query id -o tsv)
-   RG=aca-langchain-rg
-   LOC=westus2
+   export SUB=$(az account show --query id -o tsv)
+   export RG="aca-langchain-rg-${USER}-$RANDOM"
+   export LOC=westus2
    az group create -n $RG -l $LOC
    ```
 
@@ -54,7 +46,7 @@ In this part, you will:
    
    This creates an Azure Container Apps Dynamic Session Pool with Python runtime. The pool provides secure, isolated environments for executing untrusted code with pre-installed data science libraries (pandas, matplotlib, etc.). The `--network-status EgressDisabled` flag prevents outbound network access for additional security.
    ```bash
-   POOL=aca-langchain-py
+   export POOL="aca-langchain-py-${USER}-$RANDOM"
    az containerapp sessionpool create \
      --name $POOL \
      --resource-group $RG \
@@ -69,38 +61,43 @@ In this part, you will:
    
    This endpoint URL is required to connect your LangChain application to the session pool. Note that it uses the subscription ID in the path.
    ```bash
-   POOL_MGMT=$(az containerapp sessionpool show \
+   export POOL_MGMT=$(az containerapp sessionpool show \
      --name $POOL --resource-group $RG \
-     --query 'properties.poolManagementEndpoint' -o tsv)
+     --query 'properties.poolManagementEndpoint' -o tsv | tr -d '\r')
    echo $POOL_MGMT
    ```
 
-5. **Retrieve the session pool resource ID:**
+# - NOT NEEDED?  5. **Retrieve the session pool resource ID:**
    
-   You'll need this full resource ID for role assignments in the next step.
+  You'll need this full resource ID for role assignments in the next step.
    ```bash
-   POOL_ID=$(az containerapp sessionpool show \
+   export POOL_ID=$(az containerapp sessionpool show \
      --name $POOL --resource-group $RG \
-     --query id --output tsv)
+     --query id --output tsv | tr -d '\r')
    echo $POOL_ID
    ```
 
 6. **Get your user principal name:**
    
-   This retrieves your Azure AD user identity, which you'll need for role assignments.
+   This retrieves your Azure AD user identity, which you'll need for role assignments.   
+
    ```bash
-   az ad user list --query "[].{Name:displayName, UserPrincipalName:userPrincipalName}" --output table
+   export USER_PRINCIPAL_NAME=$(az ad signed-in-user show --query userPrincipalName -o tsv | tr -d '\r' )
+   export USER_OBJECT_ID=$(az ad signed-in-user show --query id -o tsv | tr -d '\r')
+   echo "User Principal Name: $USER_PRINCIPAL_NAME"
+   echo "Object ID: $USER_OBJECT_ID"
    ```
    
-   Note your UserPrincipalName from the output (e.g., `user@domain.com` or `user_domain.com#EXT#@tenant.onmicrosoft.com`).
+   Note your User PrincipalName from the output (e.g., `user_domain.com#EXT#@tenant.onmicrosoft.com`) 
 
 7. **Assign Azure ContainerApps Session Executor role:**
    
-   This role grants permission to create and execute code in the session pool. Replace `<YOUR_USER_PRINCIPAL_NAME>` with the value from the previous step.
+   This role grants permission to create and execute code in the session pool. 
+
    ```bash
    az role assignment create \
      --role "Azure ContainerApps Session Executor" \
-     --assignee "<YOUR_USER_PRINCIPAL_NAME>" \
+     --assignee "$USER_PRINCIPAL_NAME" \
      --scope $POOL_ID
    ```
 
@@ -110,51 +107,88 @@ In this part, you will:
    ```bash
    az role assignment create \
      --role "Contributor" \
-     --assignee "<YOUR_USER_PRINCIPAL_NAME>" \
+     --assignee "$USER_PRINCIPAL_NAME" \
      --scope $POOL_ID
    ```
 
-9. **Retrieve your Azure OpenAI account resource ID:**
+9. **Create Azure OpenAI account:**
    
-   You'll need this to assign permissions to access the Azure OpenAI service. Replace `<YOUR_OPENAI_ACCOUNT_NAME>` with your Azure OpenAI resource name.
+   This creates an Azure OpenAI resource in your resource group. The custom domain must be globally unique, so we'll use a combination of your username and a random number.
    ```bash
-   OPENAI_ID=$(az cognitiveservices account show \
-     --name <YOUR_OPENAI_ACCOUNT_NAME> \
+   export OPENAI_NAME="openai-aca-${USER}-$RANDOM"
+   export OPENAI_DOMAIN="openai-aca-${USER}-$RANDOM"
+   
+   az cognitiveservices account create \
+     --name $OPENAI_NAME \
      --resource-group $RG \
-     --query id --output tsv)
-   echo $OPENAI_ID
+     --location $LOC \
+     --kind OpenAI \
+     --sku s0 \
+     --custom-domain $OPENAI_DOMAIN
+   
+   echo "Azure OpenAI account created: $OPENAI_NAME"
    ```
 
-10. **Assign Cognitive Services OpenAI User role:**
+10. **Deploy GPT-3.5 Turbo model:**
     
-    This role grants permission to make API calls to your Azure OpenAI resource. Replace `<YOUR_USER_PRINCIPAL_NAME>` with your user principal name.
+    This deploys the GPT-3.5 Turbo model to your Azure OpenAI account. This model will be used by your LangChain agent for natural language processing.
     ```bash
-    az role assignment create \
-      --role "Cognitive Services OpenAI User" \
-      --assignee "<YOUR_USER_PRINCIPAL_NAME>" \
-      --scope $OPENAI_ID
+    export DEPLOYMENT_NAME="gpt-35-turbo"
+    
+    az cognitiveservices account deployment create \
+      --resource-group $RG \
+      --name $OPENAI_NAME \
+      --deployment-name $DEPLOYMENT_NAME \
+      --model-name gpt-35-turbo \
+      --model-version "1106" \
+      --model-format OpenAI \
+      --sku-capacity "30" \
+      --sku-name "Standard"
+    
+    echo "Model deployment created: $DEPLOYMENT_NAME"
     ```
 
 11. **Retrieve your Azure OpenAI endpoint:**
     
     This endpoint URL will be used to connect your application to Azure OpenAI.
     ```bash
-    OPENAI_ENDPOINT=$(az cognitiveservices account show \
-      --name <YOUR_OPENAI_ACCOUNT_NAME> \
+    export OPENAI_ENDPOINT=$(az cognitiveservices account show \
+      --name $OPENAI_NAME \
       --resource-group $RG \
       --query properties.endpoint --output tsv)
     echo $OPENAI_ENDPOINT
     ```
     
-    The endpoint will be in the format: `https://<your-resource-name>.openai.azure.com/`
+    The endpoint will be in the format: `https://<your-custom-domain>.openai.azure.com/`
+
+12. **Retrieve your Azure OpenAI account resource ID:**
+   
+   You'll need this to assign permissions to access the Azure OpenAI service.
+   ```bash
+   export OPENAI_ID=$(az cognitiveservices account show \
+     --name $OPENAI_NAME \
+     --resource-group $RG \
+     --query id --output tsv)
+   echo $OPENAI_ID
+   ```
+
+13. **Assign Cognitive Services OpenAI User role:**
+    
+    This role grants permission to make API calls to your Azure OpenAI resource.
+    ```bash
+    az role assignment create \
+      --role "Cognitive Services OpenAI User" \
+      --assignee "$USER_PRINCIPAL_NAME" \
+      --scope $OPENAI_ID
+    ```
 
 ---
 
-### Task 2 — Clone Reference Samples
+### Task 2 — Open Reference Samples
 
-**Description:** This task downloads the official Azure Container Apps Dynamic Sessions sample repository, which contains reference implementations and examples you can use as guidance for your implementation.
+**Description:** The official Azure Container Apps Dynamic Sessions sample repository is already pre-loade don this machine, which contains reference implementations and examples you can use as guidance for your implementation.
 
-1. **Clone the samples repository:**
+1. **Open the samples repository:**
    
    This repository contains example applications demonstrating various patterns for using Azure Container Apps Dynamic Sessions with different frameworks.
    ```bash
@@ -262,6 +296,25 @@ In this part, you will:
 
 ### Common Issues and Solutions
 
+- **Verify preprequisites**
+
+- Active Azure subscription  
+- Azure CLI with Container Apps extension
+- Check to see if the extension is installed:
+(`az extension show --name containerapp`)  
+- If its not installed, installi it via this command:
+(`az extension add --name containerapp --upgrade --allow-preview true -y`)  
+- Python 3.10+ and Git installed locally  - type `python3`
+- Azure OpenAI resource with a deployed model (e.g., gpt-35-turbo or gpt-4)
+
+- **Sample source code is not located at documents/ACASamples**
+  - **Cause:** For some reason the sample code was not automatically cloned into your local lab environment 
+  - **Solution:** Clone the repo manually
+        
+        ```bash
+        git clone https://github.com/Azure-Samples/container-apps-dynamic-sessions-samples
+        ```
+
 - **403 Unauthorized / Permission Denied**
   - **Cause:** Your user identity lacks the required permissions to execute code in the session pool or access Azure OpenAI.
   - **Solution:** Ensure you've assigned the following roles as shown in Task 1:
@@ -323,20 +376,3 @@ In this part, you will:
   - Ensure you have the `Cognitive Services OpenAI User` role assigned (Task 1, step 10).
 
 ---
-
-# Answer Key (for Skillable Grading)
-
-**Q1.** Which CLI command returns the pool management endpoint?  
-✅ `az containerapp sessionpool show --name <POOL> -g <RG> --query 'properties.poolManagementEndpoint' -o tsv`
-
-**Q2.** What class integrates Python code execution in LangChain?  
-✅ `SessionsPythonREPLTool` (from `langchain-azure-dynamic-sessions`)
-
-**Q3.** Why use Dynamic Sessions for code execution?  
-✅ They provide secure Hyper-V–isolated sandboxes with preinstalled data-science libraries, ideal for untrusted or ad-hoc code.
-
-**Q4.** Which FastAPI route summarizes a CSV file?  
-✅ `POST /summarize-csv`
-
-**Q5.** How do you clean up resources?  
-✅ `az group delete -n <RG> --yes --no-wait`
