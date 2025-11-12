@@ -1,4 +1,4 @@
-# Segment 1 — AI Image Generation with Serverless GPUs on Azure Container Apps
+# Segment 1 - AI Image Generation with Serverless GPUs on Azure Container Apps
 
 ## Title
 Deploy an AI Image Generation App Using Serverless GPUs in Azure Container Apps
@@ -19,13 +19,13 @@ In this part, you will:
 ---
 
 ## Estimated Duration
-45 minutes
+45-60  minutes
 
 ---
 
 ## Lab Tasks
 
-### Task 1 — Create GPU-Enabled Container App via Azure Portal
+### Task 1 - Create GPU-Enabled Container App via Azure Portal
 
 **Description:** In this task, you'll use the Azure Portal to create a new Container Apps environment and deploy a GPU-enabled AI image generation application. You'll configure the app to use serverless GPUs and expose it to the internet.
 
@@ -54,11 +54,11 @@ In this part, you will:
    - **Deployment source:** Select **Container image**
    
    **Container Apps environment:**
-   - **Region:** Select **Sweden Central**
+   - **Region:** Select **West US 3**
      
-     **Note:** Sweden Central is recommended for GPU availability. Other supported regions include Australia East, East US 2, North Central US, and West US 3.
+     **Note:** West US 3 is preallocated with GPU availability for this lab. Other supported regions include Sweden Central and Australia East, East US 2, and North Central US.
    
-   - **Container Apps environment:** Click **Create new environment**
+   - **Container Apps environment:** - keep the default
 
 4. **Create the Container Apps environment:**
    
@@ -84,7 +84,7 @@ In this part, you will:
     - **GPU Type:** Select **Consumption-GPU-NC8as-T4 - Up to 8 vCPUs, 56 GiB memory**
 
    
-   The `Consumption-GPU-NC8as-T4` profile provides:
+   The **Consumption-GPU-NC8as-T4** profile provides:
    - Up to 8 vCPUs
    - 56 GiB memory
    - 1x NVIDIA T4 GPU (16GB GPU memory)
@@ -95,10 +95,10 @@ In this part, you will:
    
    - Review all your settings on the summary page
    - Ensure all configurations are correct:
-     - Resource group: `my-gpu-demo-group`
-     - Container app name: `my-gpu-demo-app`
-     - Region: Sweden Central
-     - Image: `mcr.microsoft.com/k8se/gpu-quickstart:latest`
+     - Resource group: **my-gpu-demo-group**
+     - Container app name: **my-gpu-demo-app**
+     - Region: West US 3
+     - Image: **mcr.microsoft.com/k8se/gpu-quickstart:latest**
      - GPU enabled with Consumption-GPU-NC8as-T4 profile
      - Ingress enabled on port 80
    - Click **Create**
@@ -116,20 +116,18 @@ In this part, you will:
    - Locate the **Application URL** in the Essentials section at the top
    - Copy this URL - you'll use it in the next task to test the application
    
-   The URL will be in the format: `https://my-gpu-demo-app.[unique-id].[region].azurecontainerapps.io`
+   The URL will be in the format: **https://my-gpu-demo-app.[unique-id].[region].azurecontainerapps.io**
 
 ---
 
-### Task 2 — Test the GPU Image Generation Application
+### Task 2 - Test the GPU Image Generation Application
 
 **Description:** Now that your GPU-enabled container app is deployed, you'll test its image generation capabilities through the web interface. The application uses AI models running on the GPU to generate images from text prompts.
 
 1. **Open the application in your browser:**
    
    Using the Application URL you copied from the previous task, open it in a new browser tab.
-   
-   The URL format is: `https://my-gpu-demo-app.[unique-id].[region].azurecontainerapps.io`
-   
+       
    You should see a web interface for the AI image generation application.
    
    **Note:** The first request may take 60-90 seconds due to GPU cold start. Subsequent requests will be much faster.
@@ -157,7 +155,7 @@ In this part, you will:
 
 ---
 
-### Task 3 — Monitor GPU Performance
+### Task 3 - Monitor GPU Performance
 
 **Description:** Azure Container Apps provides tools to monitor your GPU utilization and performance. In this task, you'll use the console to access your running container and check GPU metrics using NVIDIA's monitoring tools.
 
@@ -176,7 +174,7 @@ In this part, you will:
    - Click **Connect**
    - Wait for the shell prompt to appear
 
-### Task 4 — Optimize GPU Cold Start (Advanced)
+### Task 4 - Optimize GPU Cold Start (Advanced)
 
 **Description:** GPU cold start (the time it takes for the first request after idle) can be significant. In this task, you'll learn about strategies to improve cold start performance for production applications using the Azure Portal.
 
@@ -232,7 +230,7 @@ In this part, you will:
 - **"Workload profile not found" or GPU option not available**
   - **Cause:** GPU workload profiles are not available in your selected region, or GPU quota hasn't been approved.
   - **Solution:** 
-    1. Ensure you're using a supported region: Sweden Central, East US 2, North Central US, or West US 3
+    1. Ensure you're using a supported region: West US 3, Sweden Central, East US 2, or North Central US.
     2. Verify the GPU checkbox is available in the Container creation wizard
     3. If GPU options don't appear, the quota may not be approved for your subscription (should be pre-configured in Skillable)
 
@@ -275,22 +273,6 @@ In this part, you will:
     2. Edit your revision and change **Min replicas** to `0` to allow scaling to zero
     3. Deploy the change
     4. Always delete the resource group when done with the lab to stop all charges
-
----
-
-## Advanced Exercises (Optional)
-
-### Exercise 1: Deploy Your Own AI Model
-Modify the deployment to use a different AI model or create your own container image with a custom model.
-
-### Exercise 2: Add Authentication
-Secure your image generation API using Azure Container Apps built-in authentication with Microsoft Entra ID.
-
-### Exercise 3: Implement Caching
-Add a caching layer (e.g., Azure Redis) to cache generated images and reduce GPU usage for repeated prompts.
-
-### Exercise 4: Multi-Region Deployment
-Deploy the same application to multiple regions with GPU support and use Azure Front Door for global load balancing.
 
 ---
 
