@@ -32,29 +32,34 @@ Estimated duration: **30 minutes**
 1. **Open the Container App in Azure Portal**
    - Go to https://portal.azure.com and navigate to **Resource groups > my-gpu-demo-group > my-gpu-demo-app**.
 
-2. **Edit the active revision**
-   - Select **Application > Containers** and click **Edit and deploy a revision**.
+2. **Verify your app is on the GPU workload profile**
+    - In the **Overview** blade, select the **Properties** tab.
+    - Confirm the **Workload profile** is set to `t4` with GPU enabled.
+    - Select **Change** for the workload profile, you should see that the GPU box is selected, and the GPU type is `Consumption-GPU-NC8as-T4`. If not, select this profile and save changes. Otherwise, select **Discard**.
 
-3. **Update container image & command**
-   - Under **Container image**, replace the image with `ollama/ollama:latest`.
-   - Expand **Advanced** settings and verify the command stays empty (Ollama default entrypoint).
+3. **Update the container image**
+   - Select **Application > Containers**.
+   - Update **Registry login server** to `docker.io`.
+   - Update **Image and tag** to `ollama/ollama:latest`.
+   - Ensure that the **CPU cores** is set to `8` and **Memory** is set to `56`.
 
-4. **Expose port 11434**
-   - In the **Ingress** section, enable ingress if it is not already enabled.
-   - Set **Ingress type** to **External**.
+4. **Set environment variables**
+   - Select the **Environment variables** tab.
+   - Select **Add** and provide the following environment variables:
+     - Name: `OLLAMA_HOST` → Value: `0.0.0.0`
+     - (Optional) Name: `OLLAMA_NUM_PARALLEL` → Value: `2` to allow two concurrent GPU generations.
+   - Click **Save as a new revision**. This will take a few moments to deploy the new revision.
+
+5. **Change the port the app receives traffic on**
+   - Once the revision has been deployed, select **Networking > Ingress**
+   - In the **Ingress** section, ensure the checkbox for **Ingress** is selected.
+   - Set **Ingress traffic** to **Accepting traffic from anywhere**.
    - Change the **Target port** to `11434`.
+   - Select **Save**.
 
-5. **Set environment variables**
-   - Under **Environment variables**, add:
-     - `Name: OLLAMA_HOST` → `Value: 0.0.0.0`
-     - (Optional) `Name: OLLAMA_NUM_PARALLEL` → `Value: 2` to allow two concurrent GPU generations.
-
-6. **Confirm GPU workload profile**
-   - In **Compute**, ensure the **Workload profile** remains `Consumption-GPU-NC8as-T4` with GPU enabled.
-
-7. **Deploy the new revision**
-   - Click **Review + deploy** and then **Create** to publish the new revision.
-   - Wait until the revision status shows **Running**. This can take 2–3 minutes.
+6. Once your ingress has been updated, let's verify your application is running.
+   - Select **Application > Revisions and replicas**.
+   - Once the **Running status** shows as **Running**, your application is ready.
 
 ---
 
