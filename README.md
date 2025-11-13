@@ -6,14 +6,17 @@ Welcome to the Microsoft Ignite 2025 session **PREL15: AI-Ready Apps - Container
 
 ## 🎯 Overview
 
-This hands-on lab demonstrates how to build, containerize, and deploy AI-powered applications using Azure Container Apps Dynamic Sessions. You'll learn to integrate Azure OpenAI with Python applications, manage code execution in secure sandboxed environments, and modernize applications for the cloud.
+Modernize containerized apps with AI on Azure. This hands-on lab demonstrates how to quickly deploy powerful, flexible AI-powered applications to Azure Container Apps. You'll gain hands-on experience using Azure OpenAI and open-source models on serverless GPUs for cost-efficient AI inferencing, while securing enterprise-grade apps and ensuring compliance.
 
 ### What You'll Learn
 
-- **Azure Container Apps Dynamic Sessions**: Execute untrusted code safely in isolated Python environments
+- **Azure Container Apps**: Deploy containerized AI applications with serverless GPUs
 - **Azure OpenAI Integration**: Build intelligent applications with GPT models using LangChain
-- **Cloud-Native Architecture**: Design and deploy scalable, AI-ready applications
-- **Secure Code Execution**: Implement sandboxed environments for dynamic code execution
+- **Open-Source AI Models**: Run Ollama and local LLMs on GPU-enabled containers
+- **Dynamic Sessions**: Execute untrusted code safely in isolated Python environments
+- **AI Agent Development**: Build autonomous agents with MCP and Goose
+- **Cost-Efficient AI**: Optimize AI inferencing with GPU-based compute
+- **Enterprise Security**: Implement secure, compliant AI applications
 - **Modern Development Practices**: Use Infrastructure as Code (IaC) and containerization
 
 ## 📚 Repository Structure
@@ -58,11 +61,15 @@ This hands-on lab demonstrates how to build, containerize, and deploy AI-powered
 
 This lab consists of multiple segments covering:
 
-1. **Environment Setup**: Configure Azure resources and development environment
-2. **Azure OpenAI Deployment**: Create and configure Azure OpenAI resources
-3. **Dynamic Sessions**: Set up Azure Container Apps session pools
-4. **LangChain Integration**: Build AI-powered applications with code execution
-5. **Testing & Deployment**: Test and deploy your containerized application
+1. **AI & GPU Playbook**: Understanding AI workloads and GPU acceleration on Azure
+2. **Environment Setup**: Configure Azure resources and development environment
+3. **Azure OpenAI Deployment**: Create and configure Azure OpenAI resources with GPT models
+4. **Ollama & Open-Source Models**: Deploy local LLMs on serverless GPUs
+5. **Dynamic Sessions**: Set up Azure Container Apps session pools for code execution
+6. **MCP Shell Integration**: Implement Model Context Protocol for AI agents
+7. **Goose AI Agent**: Build autonomous coding agents with Goose
+8. **LangChain Integration**: Build AI-powered applications combining multiple AI services
+9. **Testing & Deployment**: Test and deploy your containerized AI applications
 
 See [`lab/README.md`](lab/README.md) for complete lab instructions.
 
@@ -79,9 +86,13 @@ Then navigate to `http://localhost:8000`
 
 ## 🔑 Key Technologies
 
-- **Azure Container Apps**: Serverless container platform with dynamic sessions
+- **Azure Container Apps**: Serverless container platform with GPU support and dynamic sessions
 - **Azure OpenAI Service**: Enterprise-grade AI models (GPT-3.5/GPT-4)
+- **Ollama**: Run open-source LLMs (Llama, Mistral, Phi) locally and on Azure
+- **GPU Acceleration**: Serverless GPU compute for cost-efficient AI inferencing
 - **LangChain**: Framework for building LLM-powered applications
+- **MCP (Model Context Protocol)**: Connect AI agents to external tools and data
+- **Goose AI Agent**: Autonomous coding agent for software development
 - **Python**: Primary programming language
 - **FastAPI**: Modern web framework for building APIs
 - **Docker**: Containerization platform
