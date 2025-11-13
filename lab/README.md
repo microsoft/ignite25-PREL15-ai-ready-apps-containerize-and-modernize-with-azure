@@ -4,18 +4,21 @@
 
 Welcome to the hands-on lab for **AI-Ready Apps: Containerize and Modernize with Azure**! 
 
-In this lab, you'll build and deploy an AI-powered Python application using Azure Container Apps Dynamic Sessions and Azure OpenAI. You'll learn how to safely execute untrusted code in isolated environments while leveraging the power of large language models (LLMs) through LangChain.
+Modernize containerized apps with AI on Azure. In this lab, you'll learn how to quickly deploy powerful, flexible AI-powered applications to Azure Container Apps. Gain hands-on experience using Azure OpenAI and open-source models on serverless GPUs for cost-efficient AI inferencing. Secure enterprise-grade apps and ensure compliance—all through a guided, real-world project.
 
 ### Learning Objectives
 
 By the end of this lab, you will be able to:
 
-- ✅ Create and configure Azure OpenAI resources with GPT-3.5 Turbo models
+- ✅ Deploy containerized AI applications on Azure Container Apps with GPU support
+- ✅ Create and configure Azure OpenAI resources with GPT models
+- ✅ Run open-source LLMs (Ollama) on serverless GPUs for cost-efficient inferencing
 - ✅ Set up Azure Container Apps Dynamic Session Pools for secure code execution
-- ✅ Build a LangChain-powered application that combines AI with code execution
+- ✅ Build AI agents using MCP (Model Context Protocol) and Goose
+- ✅ Integrate multiple AI services with LangChain
 - ✅ Configure proper RBAC (Role-Based Access Control) for Azure resources
-- ✅ Deploy and test containerized AI applications
-- ✅ Understand security best practices for dynamic code execution
+- ✅ Implement enterprise security and compliance best practices
+- ✅ Optimize AI workloads for cost and performance
 
 ### What is Azure Container Apps Dynamic Sessions?
 
@@ -94,11 +97,12 @@ The lab is organized into the following segments:
 ### [`instructions/`](instructions/) - Step-by-Step Guides
 
 - **welcome-screen.md** - Lab introduction and overview
-- **skillable_langchain_aca_lab_1.md** - Main lab instructions
-- **segment0-ai-gpu-playbook.md** - AI and GPU background
-- **segment3-ollama.md** - Local LLM setup with Ollama
-- **segment4-mcp-shell.md** - MCP Shell integration
-- **segment5-goose-agent.md** - Goose AI agent setup
+- **segment0-ai-gpu-playbook.md** - AI and GPU playbook: Understanding GPU-accelerated AI workloads
+- **skillable_langchain_aca_lab_1.md** - Dynamic Sessions lab: Azure OpenAI with LangChain
+- **segment3-ollama.md** - Ollama setup: Run open-source LLMs on GPU containers
+- **segment4-mcp-shell.md** - MCP Shell integration: Connect AI agents to tools
+- **segment5-goose-agent.md** - Goose AI agent: Build autonomous coding agents
+- **skillable_gpu_aca_lab.md** - GPU Container Apps lab (alternative track)
 
 ### Key Files
 
@@ -107,17 +111,30 @@ The lab is organized into the following segments:
 
 ## 🚀 Lab Exercises
 
-### Exercise 1: Environment Setup (15 minutes)
+### Exercise 1: AI & GPU Playbook (20 minutes)
+
+Understand AI workloads and GPU acceleration:
+
+1. Review AI inferencing patterns
+2. Learn about GPU vs CPU for AI workloads
+3. Understand Azure Container Apps GPU support
+4. Explore cost optimization strategies
+5. Review security and compliance considerations
+
+**Key Concepts**: Serverless GPUs, cost-efficient inferencing, AI workload patterns
+
+### Exercise 2: Environment Setup (15 minutes)
 
 Set up your Azure environment and development tools:
 
 1. Create resource group
 2. Set environment variables
 3. Configure Azure CLI
+4. Register resource providers
 
 **Region Note**: Use `eastus` region for this lab as it has Azure OpenAI availability.
 
-### Exercise 2: Deploy Azure OpenAI (20 minutes)
+### Exercise 3: Deploy Azure OpenAI (20 minutes)
 
 Create and configure Azure OpenAI resources:
 
@@ -128,7 +145,43 @@ Create and configure Azure OpenAI resources:
 
 **Important**: Model version `0125` is confirmed to work in `eastus` region.
 
-### Exercise 3: Azure Container Apps Dynamic Sessions (25 minutes)
+### Exercise 4: Ollama & Open-Source Models (25 minutes)
+
+Deploy local LLMs on serverless GPUs:
+
+1. Install and configure Ollama
+2. Deploy open-source models (Llama, Mistral, Phi)
+3. Run models on GPU-enabled containers
+4. Compare performance: GPU vs CPU
+5. Understand cost implications
+
+**Models**: Llama 3.2, Mistral, Phi-3, and other open-source LLMs
+
+### Exercise 5: MCP Shell Integration (20 minutes)
+
+Implement Model Context Protocol for AI agents:
+
+1. Understand MCP architecture
+2. Configure MCP servers
+3. Connect AI models to external tools
+4. Test MCP shell interactions
+5. Build custom MCP tools
+
+**Capabilities**: File operations, terminal access, API integrations
+
+### Exercise 6: Goose AI Agent (25 minutes)
+
+Build autonomous coding agents:
+
+1. Install and configure Goose
+2. Set up agent profiles and toolkits
+3. Integrate with Azure OpenAI or Ollama
+4. Test autonomous code generation
+5. Review agent decision-making
+
+**Use Cases**: Code generation, debugging, refactoring, documentation
+
+### Exercise 7: Azure Container Apps Dynamic Sessions (25 minutes)
 
 Set up secure session pools for code execution:
 
@@ -139,25 +192,32 @@ Set up secure session pools for code execution:
    - Azure Container Apps Session Executor
    - Contributor
 
-### Exercise 4: Build LangChain Application (30 minutes)
+**Security**: Sandboxed execution, network isolation, RBAC
 
-Develop an AI-powered application with code execution:
+### Exercise 8: Build LangChain Application (30 minutes)
+
+Develop an AI-powered application integrating multiple services:
 
 1. Clone sample repository
 2. Install dependencies (LangChain, FastAPI, Azure SDKs)
 3. Configure environment variables
 4. Implement LangChain agents with Azure OpenAI
-5. Test code execution in dynamic sessions
+5. Integrate dynamic sessions for code execution
+6. Add Ollama models as alternative LLM backend
 
-### Exercise 5: Deploy and Test (20 minutes)
+**Integration**: Azure OpenAI + Ollama + Dynamic Sessions + MCP
+
+### Exercise 9: Deploy and Test (20 minutes)
 
 Deploy your application and verify functionality:
 
 1. Run FastAPI application locally
 2. Test API endpoints
 3. Verify code execution in sessions
-4. Review security and isolation
-5. Monitor application logs
+4. Test GPU-accelerated inferencing
+5. Review security and isolation
+6. Monitor application logs and performance
+7. Analyze cost and resource usage
 
 ## 🔧 Configuration Guide
 

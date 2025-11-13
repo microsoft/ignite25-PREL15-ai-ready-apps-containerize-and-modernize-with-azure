@@ -4,7 +4,7 @@ Welcome to the documentation for **AI-Ready Apps: Containerize and Modernize wit
 
 ## 📖 About This Documentation
 
-This documentation site provides comprehensive guides, tutorials, and reference materials for building AI-powered applications with Azure Container Apps Dynamic Sessions and Azure OpenAI.
+This documentation site provides comprehensive guides, tutorials, and reference materials for modernizing containerized AI applications on Azure. Learn to deploy powerful AI applications using Azure Container Apps with GPU support, Azure OpenAI, open-source models with Ollama, dynamic code execution, and AI agent development.
 
 ## 🚀 Viewing the Documentation
 
@@ -123,6 +123,15 @@ MkDocs Material supports enhanced Markdown features:
 
 ## 🎯 Key Topics
 
+### GPU-Accelerated AI on Azure
+
+Deploy cost-efficient AI workloads:
+
+- Serverless GPU compute
+- GPU vs CPU performance comparison
+- Cost optimization strategies
+- Workload patterns and best practices
+
 ### Azure Container Apps Dynamic Sessions
 
 Learn about secure, isolated Python environments for code execution:
@@ -139,7 +148,25 @@ Integrate GPT models into your applications:
 - Model deployment and configuration
 - LangChain integration
 - Prompt engineering
-- Token management
+- Token management and cost control
+
+### Open-Source Models with Ollama
+
+Run local LLMs on Azure:
+
+- Deploying Llama, Mistral, Phi models
+- GPU-accelerated inferencing
+- Model selection and optimization
+- Hybrid cloud/local deployments
+
+### AI Agent Development
+
+Build autonomous AI agents:
+
+- **MCP (Model Context Protocol)**: Connect agents to tools and data
+- **Goose Agent**: Autonomous coding and development
+- Agent architectures and patterns
+- Tool integration and orchestration
 
 ### LangChain Framework
 
@@ -148,16 +175,18 @@ Build LLM-powered applications:
 - Agents and tools
 - Memory and context
 - Chains and workflows
+- Multi-model integration
 - Custom tool development
 
 ### Security & Compliance
 
-Implement secure AI applications:
+Implement secure, enterprise-grade AI applications:
 
 - RBAC and identity management
-- Network isolation
-- Data protection
-- Compliance considerations
+- Network isolation and sandboxing
+- Data protection and privacy
+- Compliance considerations (GDPR, HIPAA)
+- Secure AI inferencing
 
 ## 🔗 External Resources
 
