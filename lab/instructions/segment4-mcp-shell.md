@@ -3,7 +3,7 @@
 > Audience: platform and infra engineers who will provision and operate shell based session pools using MCP to enable agents and tools to connect and run shell commands remotely.
 
 ## Overview
-This segment walks through creating a Shell-type Session Pool with the MCP Server enabled, retrieving the MCP endpoint and API key, and exercising the MCP JSON-RPC tools to launch and run remote shells.
+This segment walks through creating a Shell container type Session Pool with the MCP Server enabled, retrieving the MCP endpoint and API key, and exercising the MCP JSON-RPC tools to launch and run remote shells.
 
 Estimated duration: 45 minutes
 
@@ -23,53 +23,53 @@ Estimated duration: 45 minutes
 
 ---
 
-## 1. Install Azure Container Apps CLI Extension
+## Login to Azure
+If you are not logged into Azure already, run the following command to login. Use the credentials from the Resources tab in the lab to login.
 
-Open a local terminal and install the latest version of the Azure Container Apps CLI extension:
-
-```azurecli
-az extension add --name containerapp --allow-preview true --upgrade
+```azure cli
+az login
 ```
 
 ---
 
-## 2. Set Up Environment Variables
+## 1. Set Up Environment Variables
+
+Start by opening **Visual Studio Code** from your desktop and navigating to the terminal at the bottom of the window.
+
+Click on the down arrow next to the **+** button and select **Git Bash**. This will open a bash terminal that we'll use to create our resources.
 
 In your terminal, set the following environment variables for your subscription, resource group, session pool name, and location to be used for creating resources.
 
-Query for your Azure subscription ID and set the value to a variable:
+First, query for your Azure subscription ID and set the value to a variable:
 
 ```sh
 SUBSCRIPTION_ID=$(az account show --query id --output tsv)
 ```
 
-Set the variables used in this procedure. Replace the placeholders surrounded by `<>` with your own values:
+Set the variables used in this procedure.
 
 ```sh
-RESOURCE_GROUP=<RESOURCE_GROUP_NAME>
-SESSION_POOL_NAME=<SESSION_POOL_NAME>
-LOCATION=<LOCATION>
+RESOURCE_GROUP=my-shell-session-rg
+SESSION_POOL_NAME=myshellpool
+LOCATION=westus3
 ```
 
-You use these variables to create the resources in the following steps.
+You'll use these variables to create the resources in the following steps.
 
-Set the subscription you want to use for creating the resource group:
-
-```sh
-az account set -s $SUBSCRIPTION_ID
-```
-
-Create a resource group:
+Next, create a resource group:
 
 ```sh
 az group create --name $RESOURCE_GROUP --location $LOCATION
 ```
+
+> Note: If creating the resource group fails, run `az login` and use the credentials in the Resources tab of the lab.
+
 ---
 
 ## 2. Create a shell session pool with an MCP server endpoint (ARM template)
-Use the ARM template below to create a shell session pool with MCP server enabled.
+In this step you'll use the ARM template below to create a shell session pool resource with MCP server enabled.
 
-Open a text editor and create a deployment template file named `deploy.json` and copy the following content into it:
+In Visual Studio Code, click on New File in the Start menu and create a new file named `deploy.json` . Once created, copy the following contents into the file and save it.
 
 ```json
 {
@@ -87,7 +87,7 @@ Open a text editor and create a deployment template file named `deploy.json` and
             "location": "[parameters('location')]",
             "properties": {
                 "poolManagementType": "Dynamic",
-                "containerType": "Shell", // Set the "containerType" property to "Shell"
+                "containerType": "Shell",
                 "scaleConfiguration": {
                     "maxConcurrentSessions": 5
                 },
@@ -101,7 +101,7 @@ Open a text editor and create a deployment template file named `deploy.json` and
                     }
                 },
                 "mcpServerSettings": { 
-                    "isMCPServerEnabled": true // Add the "mcpServerSettings" section to enable the MCP server
+                    "isMCPServerEnabled": true
                 }
             }
         }
@@ -109,16 +109,10 @@ Open a text editor and create a deployment template file named `deploy.json` and
 }
 ```
 
-Save the file and close the editor.
-
-In your terminal, navigate to where you saved the json file and run the following command to deploy the ARM template:
+After the file is saved you can go back to the terminal and navigate to the file path where you saved the json file. Then run the following command to deploy the ARM template to your existing resource group:
 
 ```azurecli
-az deployment group create \
-  --resource-group $RESOURCE_GROUP \
-  --template-file deploy.json \
-  --name $SESSION_POOL_NAME \
-  --location $LOCATION
+az deployment group create --resource-group $RESOURCE_GROUP --template-file deploy.json --name $SESSION_POOL_NAME --parameters name=$SESSION_POOL_NAME location=$LOCATION
 ```
 
 ---
@@ -167,12 +161,12 @@ Call the `tools/call` method to launch a shell environment. The response include
 ENVIRONMENT_RESPONSE=$(curl -sS -X POST "$MCP_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "x-ms-apikey: $API_KEY" \
-  -d '{ "jsonrpc": "2.0", "id": "2", "method": "tools/call", "params": { "name": "launchShell", "arguments": {} } }')
+  -d '{ "jsonrpc": "2.0", "id": "2", "method": "tools/call", "params": { "name": "launchShellEnvironment", "arguments": {} } }')
 
 echo $ENVIRONMENT_RESPONSE
 ```
 
-Extract the `environmentId` from the response for use in subsequent commands.
+View the output from the previous commands and extract/copy the `environmentId` from the response for use in subsequent commands.
 
 ---
 
@@ -198,6 +192,11 @@ curl -sS -X POST "$MCP_ENDPOINT" \
 ```
 
 You should see output that includes the command results in the `stdout` field.
+
+Output:
+```json
+{"jsonrpc":"2.0","id":"3","result":{"content":[{"type":"text","text":"stdout: Hello from Azure Container Apps Shell Session!\n\nstderr: "}],"structuredContent":{"stdout":"Hello from Azure Container Apps Shell Session!\n","stderr":""}}}
+```
 
 ---
 
