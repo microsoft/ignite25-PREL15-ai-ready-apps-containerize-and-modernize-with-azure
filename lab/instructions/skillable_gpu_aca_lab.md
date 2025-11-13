@@ -162,17 +162,22 @@ In this part, you will:
 1. **Access the container console via Azure Portal:**
    
    - Navigate to the Azure Portal: https://portal.azure.com
-   - Go to your container app: **Resource Groups** → `my-gpu-demo-group` → `my-gpu-demo-app`
+   - Go to your container app: **Resource Groups** → **my-gpu-demo-group** → **my-gpu-demo-app**
    - In the left menu, under **Monitoring**, select **Console**
-   - Select your active **replica** from the dropdown
-   - Select your **container** (`my-gpu-demo-container`)
-   - Click **Reconnect** if needed
+   - For the console, choose **App Container**
+   - If not displayed by default:
+       - Select your active **replica** from the dropdown
+       - Select your **container** (**my-gpu-demo-container**)
+       - Click **Reconnect** if needed
 
 2. **Connect to the container shell:**
    
    - In the **Choose startup command** dialog, select `/bin/bash`
    - Click **Connect**
    - Wait for the shell prompt to appear
+
+3. **Check out the Debug Console**
+   - At the top of the page, choose **Debug** and repeat steps 1 and 2.
 
 ### Task 4 - Optimize GPU Cold Start (Advanced)
 
@@ -187,10 +192,10 @@ In this part, you will:
    
    Configure your app to always keep at least one replica running. This eliminates cold starts but incurs continuous costs.
    
-   - Under **Scale**, set:
+   - Under **Scale** on the left, set:
      - **Min replicas:** `1`
      - **Max replicas:** `3`
-   - Click **Save**
+   
    
    **Note:** With minimum replicas set to 1, at least one instance with GPU will always be running, eliminating cold starts but increasing costs.
 
@@ -198,12 +203,15 @@ In this part, you will:
    
    Increase up HTTP-based scaling to handle varying loads:
    
-   - In the **Scale** tab, scroll to **Scale rule**
+   - Click on the existing **Scale rule**
+
       - Edit:
      - **Rule name:** `http-scaler`
      - **Type:** `HTTP scaling`
      - **Concurrent requests:** `100`
-   - Click **Add Scale Rule** to deploy the revision
+   
+   - Click **Add Scale Rule**
+   - Click **Save as New Revision** to deploy the revision
    
    This scales your app based on concurrent HTTP requests, allowing it to handle traffic spikes while scaling down during low usage (but never below 1 replica).
 
