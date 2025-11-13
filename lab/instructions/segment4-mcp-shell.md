@@ -23,7 +23,7 @@ Estimated duration: 45 minutes
 
 ---
 
-## 0. Login to Azure
+## Login to Azure
 If you are not logged into Azure already, run the following command to login. Use the credentials from the Resources tab in the lab to login.
 
 ```azure cli
