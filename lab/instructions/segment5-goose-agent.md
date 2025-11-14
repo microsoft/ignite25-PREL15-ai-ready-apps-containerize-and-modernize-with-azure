@@ -25,9 +25,8 @@
 ---
 
 ## Task 1 — Prepare the Deployment Workspace (10 minutes)
-1. Clone the Goose on ACA repository and change into the directory:
+1. In the wsl terminal in VS Code, change into the goose-on-aca directory:
    ```bash
-   git clone https://github.com/simonjj/goose-on-aca.git
    cd goose-on-aca
    ```
 2. Review the project structure:
@@ -45,9 +44,11 @@
    ```
 2. Supply prompted parameters:
    - **Environment name** (e.g., `goose-prod`).
-   - **Azure subscription** and region (choose a GPU-enabled region).
-   - **Proxy Auth Password** — becomes the basic auth credential for the Nginx gateway.
-   - **Ollama host** (use the ACA URL/hostname from Segment 3 or another accessible Ollama service).
+   - **Azure subscription** and region (choose the GPU-enabled region eastus2).
+   - **Proxy Auth Password** — becomes the basic auth credential for the Nginx gateway. (e.g., `goosepw`)
+   - **Note** - please remember the password!
+   - **Resource Group** - choose the existing **my-gpu-demo-group**
+   - **Ollama host** (use the ACA URL/hostname from Segment 3 ( or another accessible Ollama service).
 3. The deployment provisions:
    - Container Apps environment + GPU workload profile.
    - Azure Container Registry, Storage (Azure Files) for model/config persistence.

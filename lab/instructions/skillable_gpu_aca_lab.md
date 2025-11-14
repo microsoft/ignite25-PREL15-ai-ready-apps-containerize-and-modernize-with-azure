@@ -29,15 +29,18 @@ In this part, you will:
 
 **Description:** In this task, you'll use the Azure Portal to create a new Container Apps environment and deploy a GPU-enabled AI image generation application. You'll configure the app to use serverless GPUs and expose it to the internet.
 
-1. **Navigate to Azure Container Apps:**
+1. **Open a browser and sign in to Azure:**
    
-   - Open your browser and go to the Azure Portal: https://portal.azure.com
-   - In the search bar at the top, type **Container Apps**
-   - Select **Container Apps** from the results
+   - Open your browser and go to the Azure Portal: `https://portal.azure.com`
+   - Follow the instructions for signing in.  
+   - For credentials, Use the **User Name** and **TAP** from the **Azure Portal** section of the **Resources** tab above.
+   
 
 2. **Start creating a new Container App:**
    
-   - Click **+ Create** button
+   - Once signed in to azure.portal.com, type `Container App` In the search bar at the top.
+   - Select **Container App** from the results
+   - - Click **+ Create** button
    - Then select **Container App**
    
    This will open the Container App creation wizard.
@@ -48,7 +51,7 @@ In this part, you will:
    
    **Project details:**
    - **Subscription:** Select your Azure subscription
-   - **Resource group:** Click **Create new** and enter `my-gpu-demo-group`
+   - **Resource group:** Click **Create new resource group** and enter `my-gpu-demo-group`
    - **Container app name:** Enter `my-gpu-demo-app`
   
    - **Deployment source:** Select **Container image**
@@ -59,18 +62,10 @@ In this part, you will:
      **Note:** West US 3 is preallocated with GPU availability for this lab. Other supported regions include Sweden Central and Australia East, East US 2, and North Central US.
    
    - **Container Apps environment:** - keep the default
-
-4. **Create the Container Apps environment:**
-   
-   In the **Create Container Apps environment** dialog:
-   - **Environment name:** Enter `my-gpu-demo-env`
-   - Click **Create**
-   
-   This creates a new environment that will host your GPU-enabled container app.
    
    - Click **Next: Container >** to continue
 
-5. **Configure Container settings:**
+4. **Configure Container settings:**
    
    In the **Container** tab, enter the following values:
    
@@ -91,7 +86,7 @@ In this part, you will:
    
    - Click **Review + create**
 
-7. **Review and create:**
+5. **Review and create:**
    
    - Review all your settings on the summary page
    - Ensure all configurations are correct:
@@ -102,44 +97,38 @@ In this part, you will:
      - GPU enabled with Consumption-GPU-NC8as-T4 profile
      - Ingress enabled on port 80
    - Click **Create**
+   - There may be a pause as Azure reviews the setup and starts the deployment
 
-8. **Wait for deployment:**
+6. **Wait for deployment:**
    
    The deployment process will begin. This typically takes 3-5 minutes to complete.
    
+   - You'll be forwarded automatically to a **Deployment is in Progress** screen.
    - Wait for the notification **"Deployment is complete"**
    - Click **Go to resource** to view your deployed container app
 
-9. **Retrieve the application URL:**
+9. **Open the application in your browser:**
    
    Once on the Container App overview page:
-   - Locate the **Application URL** in the Essentials section at the top
-   - Copy this URL - you'll use it in the next task to test the application
-   
-   The URL will be in the format: **https://my-gpu-demo-app.[unique-id].[region].azurecontainerapps.io**
-
+   - Locate the **Application URL** in the Essentials section at the top right
+   - Click on this URL to go open the application
 ---
 
 ### Task 2 - Test the GPU Image Generation Application
 
 **Description:** Now that your GPU-enabled container app is deployed, you'll test its image generation capabilities through the web interface. The application uses AI models running on the GPU to generate images from text prompts.
 
-1. **Open the application in your browser:**
-   
-   Using the Application URL you copied from the previous task, open it in a new browser tab.
-       
-   You should see a web interface for the AI image generation application.
-   
-   **Note:** The first request may take 60-90 seconds due to GPU cold start. Subsequent requests will be much faster.
-
 2. **Generate your first image:**
+   
+   If the app is not open already, click on the **Application URL** from the last step
+   - **Note:** The application may take a minute or two to load the first time before displaying in the browser.  You can check the status of the application via the **Running Status** indicator in the **Revisions and Replicas** blade of your container app in the Azure portal. The status should be either **Activating** or **Running**.
    
    Use the web interface to generate an image:
    - Enter a text prompt in the input field (e.g., "A futuristic city at sunset with flying cars")
    - Click the **Generate** button
    - Wait for the GPU to process your request and generate the image
    
-   The image generation typically takes 5-15 seconds once the GPU is warm.
+   **Note:** The first request may take 60-90 seconds due to GPU cold start. Subsequent requests will be much faster.  The image generation typically takes 5-15 seconds once the GPU is warm.
    
    **What's happening:** The AI model is using the NVIDIA T4 GPU to process your text prompt and generate an image using diffusion models.
 

@@ -15,15 +15,11 @@ Estimated duration: 45 minutes
 - Initialize the MCP server and launch a remote shell environment via JSON-RPC
 - Run commands in the remote shell and fetch results
 
----
 
-## Prerequisites
-- Azure CLI installed and logged in
-- Familiarity with ARM deployments and basic Azure CLI usage
-
----
 
 ## Login to Azure
+Open VS Code and use the wsl terminal for the folllowing commands.
+
 If you are not logged into Azure already, run the following command to login. Use the credentials from the Resources tab in the lab to login.
 
 ```azure cli
@@ -43,15 +39,15 @@ In your terminal, set the following environment variables for your subscription,
 First, query for your Azure subscription ID and set the value to a variable:
 
 ```sh
-SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+export SUBSCRIPTION_ID=$(az account show --query id --output tsv | tr -d '\r')
 ```
 
 Set the variables used in this procedure.
 
 ```sh
-RESOURCE_GROUP=my-shell-session-rg
-SESSION_POOL_NAME=myshellpool
-LOCATION=westus3
+export RESOURCE_GROUP=my-shell-session-rg
+export SESSION_POOL_NAME=myshellpool
+export LOCATION=westus3
 ```
 
 You'll use these variables to create the resources in the following steps.
@@ -69,7 +65,9 @@ az group create --name $RESOURCE_GROUP --location $LOCATION
 ## 2. Create a shell session pool with an MCP server endpoint (ARM template)
 In this step you'll use the ARM template below to create a shell session pool resource with MCP server enabled.
 
-In Visual Studio Code, click on New File in the Start menu and create a new file named `deploy.json` . Once created, copy the following contents into the file and save it.
+- In Visual Studio Code, check for a file called deploy.json.  
+- If It;s there, verify that it matches the file below.  
+- Otherwise, click on New File in the Start menu and create a new file named `deploy.json` . Once created, copy the following contents into the file and save it.
 
 ```json
 {
@@ -121,7 +119,8 @@ az deployment group create --resource-group $RESOURCE_GROUP --template-file depl
 After the resource is created, obtain the MCP endpoint using `az rest` against the session pool ARM resource (2025-02-02-preview API). Example:
 
 ```bash
-MCP_ENDPOINT=$(az rest --method GET --uri "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.App/sessionPools/$SESSION_POOL_NAME?api-version=2025-02-02-preview" --query "properties.mcpServerSettings.mcpServerEndpoint" -o tsv)
+export MCP_ENDPOINT=$(az rest --method GET --uri "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.App/sessionPools/$SESSION_POOL_NAME?api-version=2025-02-02-preview" --query "properties.mcpServerSettings.mcpServerEndpoint" -o tsv | tr -d '\r')
+echo $MCP_ENDPOINT
 ```
 
 This will query the MCP server endpoint and store it in the `MCP_ENDPOINT` environment variable.
@@ -132,7 +131,8 @@ This will query the MCP server endpoint and store it in the `MCP_ENDPOINT` envir
 To interact with the MCP server, request credentials by calling the `fetchMCPServerCredentials` action on the session pool resource:
 
 ```bash
-API_KEY=$(az rest --method POST --uri "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.App/sessionPools/$SESSION_POOL_NAME/fetchMCPServerCredentials?api-version=2025-02-02-preview" --query "apiKey" -o tsv)
+export API_KEY=$(az rest --method POST --uri "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.App/sessionPools/$SESSION_POOL_NAME/fetchMCPServerCredentials?api-version=2025-02-02-preview" --query "apiKey" -o tsv | tr -d '\r')
+echo $API_KEY
 ```
 
 The response includes an `apiKey` value that will be stored in the `API_KEY` environment variable.
@@ -154,11 +154,12 @@ A successful response will include `protocolVersion` and `serverInfo`.
 
 ---
 
-## 6. Launch a Shell Environment
-Call the `tools/call` method to launch a shell environment. The response includes an `environmentId` you must use for further shell actions. Run the following command:
+## 6. Set Environment variables
+
+Run the following commands in the VS Code wsl terminal:
 
 ```bash
-ENVIRONMENT_RESPONSE=$(curl -sS -X POST "$MCP_ENDPOINT" \
+export ENVIRONMENT_RESPONSE=$(curl -sS -X POST "$MCP_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "x-ms-apikey: $API_KEY" \
   -d '{ "jsonrpc": "2.0", "id": "2", "method": "tools/call", "params": { "name": "launchShellEnvironment", "arguments": {} } }')
@@ -166,12 +167,17 @@ ENVIRONMENT_RESPONSE=$(curl -sS -X POST "$MCP_ENDPOINT" \
 echo $ENVIRONMENT_RESPONSE
 ```
 
-View the output from the previous commands and extract/copy the `environmentId` from the response for use in subsequent commands.
+View the output from the previous commands, extract/copy the `environmentId` from the response and set it as an environment variable:
 
+"0d72ca36-7599-48d0-b584-51e441e72bdc"
+
+```bash
+export ENVIRONMENT_ID="ENVIRONMENT_ID"
+echo $ENVIRONMENT_ID
 ---
 
 ## 7. Run Commands in the Remote Shell
-Run commands in your remote shell environment. Replace `<ENVIRONMENT_ID>` with the ID returned from the previous step:
+Run commands in your remote shell environment. :
 
 ```bash
 curl -sS -X POST "$MCP_ENDPOINT" \
@@ -184,7 +190,7 @@ curl -sS -X POST "$MCP_ENDPOINT" \
     "params": {
       "name": "runShellCommandInRemoteEnvironment",
       "arguments": {
-        "environmentId": "<ENVIRONMENT_ID>",
+        "environmentId": "$ENVIRONMENT_ID",
         "shellCommand": "echo Hello from Azure Container Apps shell dynamic session!"
       }
     }
@@ -201,7 +207,6 @@ Output:
 ---
 
 ## 8. Practical Exercises (optional)
-- Install a small toolset in the shell (e.g., `jq`, `git`) and verify installations
 - Create a file in the remote shell and read it back using the RPC method
 - Run a short script and capture its output
 
