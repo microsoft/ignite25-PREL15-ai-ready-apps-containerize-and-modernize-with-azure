@@ -59,7 +59,8 @@ Estimated duration: **30 minutes**
         - Set **Name** to `OLLAMA_HOST`, choose **Manual entry**, and enter the value `0.0.0.0`.
         - Add another environment variable with **Manual entry** named `OLLAMA_NUM_PARALLEL`, set the value to `2`. This will allow Ollama to process multiple inference requests in parallel.
 
-    - Click **Save as a new revision**. This will take a few moments to deploy the new revision. Select the notification bell in the top right to see the status of the ongoing deployment.
+    - Click **Save as a new revision**. 
+    - This will take a few moments to deploy the new revision. Select the notification bell in the top right to see the status of the ongoing deployment.
 
 1. **Change the port the app receives traffic on**
 
@@ -90,34 +91,42 @@ Estimated duration: **30 minutes**
 
 1. **Verify Ollama is running**
 
-    ```bash
-    ps aux | grep ollama
-    ollama --version
-    ```
+Type the following commands into the console:
+
+  `ps aux | grep ollama`
+  `ollama --version`
+  
+You should get a response like this: 
+
+  ```bash
+
+  ollama --version is x.xx.xx
+
+  ```
 
 1. **Pull the requested models**
 
-    ```bash
-    ollama pull smollm2:1.7b
-    ollama pull deepseek-r1:14b
-    ollama pull gpt-oss:20b
-    ```
+Type the following commands into the console:
+
+ `ollama pull smollm2:1.7b`
+ `ollama pull deepseek-r1:14b`
+ `ollama pull gpt-oss:20b`
 
     > Each download can take several minutes. Keep the console open until all pulls complete.
 
 1. **List installed models**
 
-    ```bash
-    ollama list
-    ```
+Type the following commands into the console:
 
-    You should see all three models with the `latest` digest.
+ `ollama list`
+
+    You should see all three models with the **latest** digest.
 
 ---
 
 ## Task 3 — Compare Model Quality with Prompt Pack
 
-Use the console (or API) to run these prompts against each model. The goal is to spot differences across model sizes.
+Use the console  to run these prompts against each model. The goal is to spot differences across model sizes.
 
 | Prompt | What to Look For |
 | --- | --- |
@@ -127,11 +136,11 @@ Use the console (or API) to run these prompts against each model. The goal is to
 
 Example CLI usage inside the console:
 
-```bash
-ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."
-ollama run deepseek-r1:14b "Write a Python function that generates a haiku using a small in-memory word list."
-ollama run gpt-oss:20b "Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I?"
-```
+
+ `ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."`
+ `ollama run deepseek-r1:14b Write a Python function that generates a haiku using a small in-memory word list."`
+ `ollama run gpt-oss:20b "Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I?"`
+
 
 Pay attention to latency, depth of reasoning, and hallucination risk for each model. Experiment with your own prompts as well!
 
@@ -141,68 +150,70 @@ Pay attention to latency, depth of reasoning, and hallucination risk for each mo
 
 **Goal:** Interact with the Ollama server remotely using typical dev tooling.
 
-### 4.1 Ensure your container app endpoint is reachable
+### 4.1 Set the container app endpoint as an environment variable
 
-- Select **Overview** in the left-hand navigation blade.
-- Click on the **Application URL** to open your application in the browser. The page will load once the GPU revision is running. Save this URL for the next steps.
+1. **Get your container app URL**
+   - In the Azure Portal, select **Overview** in the left-hand navigation blade.
+   - Use the copy icon to the right of the **Application URL** to copy the Application URL to the clipboard.
+
+2. **Set the environment variable**
+   - Open VS Code on the lab host.
+   - Open the WSL terminal.
+   - Run the following command, replacing `<Your Container App URL>` with the URL you copied:
+
+    ```bash
+    export OLLAMA_URL="<Your Container App URL>"
+    ```
+
+3. **Verify the variable is set**
+
+    ```bash
+    echo $OLLAMA_URL
+    ```
+
+   You should see your container app URL displayed.
 
 ### 4.2 List installed models
 
-- Open a terminal on your local machine or in Cloud Shell.
-- **curl (Cloud Shell / Linux / WSL):**
+Run the following command in the WSL terminal:
 
-    ```bash
-    curl -s <Your Container App's URL>/api/tags | jq
-    ```
-
-- **wget (any bash):**
-
-    ```bash
-    wget -qO- <Your Container App's URL>/api/tags
-    ```
-
-- **PowerShell:**
-
-    ```powershell
-    Invoke-RestMethod -Uri "<Your Container App's URL>/api/tags" -Method Get
-    ```
+```bash
+curl -s $OLLAMA_URL/api/tags | jq
+```
+This will display all models currently available on your Ollama server.
 
 ### 4.3 Generate text via streaming inference
+Run the following command to test text generation:
 
-- **curl:**
+- **Using curl:**
 
-    ```bash
-    curl -N <Your Container App's URL>/api/generate \
-      -H "Content-Type: application/json" \
-      -d '{"model":"smollm2:1.7b","prompt":"Explain the concept of vector databases."}'
-    ```
+  ```bash
+  curl -N $OLLAMA_URL/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{"model":"smollm2:1.7b","prompt":"Explain the concept of vector databases."}'
+  ```
+You'll see the response stream in real-time as the model generates text.
 
-- **PowerShell:**
-
-    ```powershell
-    Invoke-RestMethod -Uri "<Your Container App's URL>/api/generate" `
-      -Method Post `
-      -Body (@{ model = "deepseek-r1:14b"; prompt = "Write a short play about cloud elasticity." } | ConvertTo-Json) `
-      -ContentType "application/json"
-    ```
 
 ### 4.4 Show model metadata (pick any deployed model)
 
-- **curl:**
+- **Using curl:**
 
-    ```bash
-    curl <Your Container App's URL>/api/show \
-      -H "Content-Type: application/json" \
-      -d '{"model":"gpt-oss:20b"}'
-    ```
+  ```bash
+  curl $OLLAMA_URL/api/show \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-oss:20b"}'
+  ```
 
-- **wget:**
+- **Using wget:**
 
-    ```bash
-    wget -qO- --method=POST --header="Content-Type: application/json" \
-      --body-data='{"model":"smollm2:1.7b"}' \
-      <Your Container App's URL>/api/show
-    ```
+  ```bash
+  wget -qO- --method=POST --header="Content-Type: application/json" \
+  --body-data='{"model":"smollm2:1.7b"}' \
+  $OLLAMA_URL/api/show    
+  ```
+
+Both commands will return detailed metadata about the specified model, including its parameters, architecture, and system requirements.
 
 > 🔐 Tip: For production deployments, restrict ingress to private endpoints or secure the API with Azure Container Apps authentication.
 
