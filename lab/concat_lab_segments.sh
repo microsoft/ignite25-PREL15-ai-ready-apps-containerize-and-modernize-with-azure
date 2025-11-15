@@ -12,9 +12,9 @@ OUT="lab-script.md"
 FILES=(
   "welcome-screen.md"
   "segment0-ai-gpu-playbook.md"
-  "skillable_gpu_aca_lab.md"
-  "skillable_langchain_aca_lab_1.md"
-  "segment3-ollama.md"
+  "segment1-gpu_aca_lab.md"
+  "segment2-ollama.md"
+  "segment3-langchain_aca_lab.md"
   "segment4-mcp-shell.md"
   "segment5-goose-agent.md"
 )

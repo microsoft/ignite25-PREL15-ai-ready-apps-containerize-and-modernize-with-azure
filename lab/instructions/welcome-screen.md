@@ -8,6 +8,12 @@ Modernize containerized apps with AI on Azure. Learn how to quickly deploy power
 
 To begin, log into the virtual machine using the following credentials: +++@lab.VirtualMachine(Win11-Pro-Base).Password+++
 
+Next, Sign in to Azure to start auto-generation of resources during the introductions (10-15 mins):
+   
+   - Open your browser and go to the Azure Portal: `https://portal.azure.com`
+   - Follow the instructions for signing in.  
+   - For credentials, open the **Resources** tab above and use the **User Name** and **TAP** from the **Azure Portal** section.
+
 **Note:** Text formatted as an +++example+++ represents type text. Clicking on this text will automatically insert it to prevent any typing errors.
 
 

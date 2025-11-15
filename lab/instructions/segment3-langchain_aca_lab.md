@@ -1,4 +1,4 @@
-# Segment 2 — LangChain + Azure Container Apps Dynamic Sessions
+# Segment 3 — LangChain + Azure Container Apps Dynamic Sessions
 
 ## Title
 Build a LangChain Agent with Azure Container Apps Dynamic Sessions (Code Interpreter)
@@ -67,7 +67,7 @@ In this part, you will:
    echo $POOL_MGMT
    ```
 
-# - NOT NEEDED?  5. **Retrieve the session pool resource ID:**
+# 5. **Retrieve the session pool resource ID:**
    
   You'll need this full resource ID for role assignments in the next step.
    ```bash
@@ -186,7 +186,7 @@ In this part, you will:
 
 ### Task 2 — Open Reference Samples
 
-**Description:** The official Azure Container Apps Dynamic Sessions sample repository is already pre-loade don this machine, which contains reference implementations and examples you can use as guidance for your implementation.
+**Description:** The official Azure Container Apps Dynamic Sessions sample repository is already pre-loaded on this machine, which contains reference implementations and examples you can use as guidance for your implementation.
 
 1. **Open the samples repository:**
    
@@ -302,7 +302,7 @@ In this part, you will:
 - Azure CLI with Container Apps extension
 - Check to see if the extension is installed:
 (`az extension show --name containerapp`)  
-- If its not installed, installi it via this command:
+- If its not installed, install it via this command:
 (`az extension add --name containerapp --upgrade --allow-preview true -y`)  
 - Python 3.10+ and Git installed locally  - type `python3`
 - Azure OpenAI resource with a deployed model (e.g., gpt-35-turbo or gpt-4)
