@@ -104,6 +104,8 @@ Then navigate to `http://localhost:8000`
 - [Azure OpenAI Service](https://learn.microsoft.com/azure/cognitive-services/openai/)
 - [LangChain Documentation](https://python.langchain.com/)
 - [Microsoft Ignite 2025](https://ignite.microsoft.com/)
+- [Microsoft Learn At Ignite](https://aka.ms/LearnAtIgnite)
+- [Ignite 2025 Next Steps](https://aka.ms/ignite25-next-steps)
 
 ## 🤝 Contributing
 
