@@ -15,7 +15,6 @@ Estimated duration: 45 minutes
 - Initialize the MCP server and launch a remote shell environment via JSON-RPC
 - Run commands in the remote shell and fetch results
 
-
 ---
 
 ## 1. Set Up Environment Variables
@@ -71,8 +70,8 @@ az group create --name $RESOURCE_GROUP --location $LOCATION
 In this step you'll use the ARM template below to create a shell session pool resource with MCP server enabled.
 
 - In Visual Studio Code, check for a file called deploy.json.  
-- If It's there, verify that it matches the file below.  
-- Otherwise, click on New File in the Start menu and create a new file named `deploy.json` . Once created, copy the following contents into the file and save it.
+- If it's there, verify that it matches the file below.  
+- Otherwise, create a new file named `deploy.json` . Once created, copy the following contents into the file and save it.
 
 ```json
 {
@@ -118,6 +117,8 @@ After the file is saved you can go back to the terminal and navigate to the file
 az deployment group create --resource-group $RESOURCE_GROUP --template-file deploy.json --name $SESSION_POOL_NAME --parameters name=$SESSION_POOL_NAME location=$LOCATION
 ```
 
+Once completed, this will create a dynamic shell session resource that is MCP enabled.
+
 ---
 
 ## 3. Retrieve the MCP Server Endpoint
@@ -159,7 +160,7 @@ A successful response will include `protocolVersion` and `serverInfo`.
 
 ---
 
-## 6. Set Environment variables
+## 6. Launch Shell Environment
 
 Run the following commands in the VS Code wsl terminal:
 
@@ -171,7 +172,7 @@ export ENVIRONMENT_RESPONSE=$(curl -sS -X POST "$MCP_ENDPOINT" \
 echo $ENVIRONMENT_RESPONSE
 ```
 
-View the output from the previous commands, extract/copy the `environmentId` from the response and set it as an environment variable:
+View the output from the previous commands, extract/copy the `environmentId` from the response and set it as an environment variable.
 
 ```bash
 export ENVIRONMENT_ID="<paste-your-environment-id-here>"
@@ -195,24 +196,129 @@ curl -sS -X POST "$MCP_ENDPOINT" \
       "name": "runShellCommandInRemoteEnvironment",
       "arguments": {
         "environmentId": "$ENVIRONMENT_ID",
-        "shellCommand": "echo Hello from Azure Container Apps shell dynamic session!"
+        "shellCommand": "echo Hello from Azure Container Apps dynamic shell session!"
       }
     }
-  }'
+  }' | jq -r '.result.structuredContent.stdout'
 ```
 
-You should see output that includes the command results in the `stdout` field.
-
-Output:
-```json
-{"jsonrpc":"2.0","id":"3","result":{"content":[{"type":"text","text":"stdout: Hello from Azure Container Apps Shell Session!\n\nstderr: "}],"structuredContent":{"stdout":"Hello from Azure Container Apps Shell Session!\n","stderr":""}}}
+**Output**
+```
+Hello from Azure Container Apps dynamic shell session!
 ```
 
 ---
 
-## 8. Practical Exercises (optional)
-- Create a file in the remote shell and read it back using the RPC method
-- Run a short script and capture its output
+## 8. Manage files in the remote shell session
+
+Use the previous remote environment to run shell commands to create and manage files using Python. 
+
+### Step 1: Create a text file and verify its contents
+
+Create and read a file in the remote shell. Copy the following command and run it in the terminal using your previously created environment variables. 
+
+```bash
+curl -sS -X POST "$MCP_ENDPOINT" \
+  -H "Content-Type: application/json" \
+  -H "x-ms-apikey: $API_KEY" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "4",
+    "method": "tools/call",
+    "params": {
+      "name": "runShellCommandInRemoteEnvironment",
+      "arguments": {
+        "environmentId": "$ENVIRONMENT_ID",
+        "shellCommand": "echo \"Hello from remote shell!\" > hello.txt && echo \"Created file: hello.txt\" && echo \"Contents of hello.txt:\" && cat hello.txt"
+      }
+    }
+  }' | jq -r '.result.structuredContent.stdout'
+```
+
+**Expected Output:**
+```
+Created file: hello.txt
+Contents of hello.txt:
+Hello from remote shell!
+```
+
+### Step 2: Install Python and create a script to rename the file
+
+Install the necessary Python packages in the remote environment and run the scripts to rename the file.
+
+```bash
+curl -sS -X POST "$MCP_ENDPOINT" \
+  -H "Content-Type: application/json" \
+  -H "x-ms-apikey: $API_KEY" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "5",
+    "method": "tools/call",
+    "params": {
+      "name": "runShellCommandInRemoteEnvironment",
+      "arguments": {
+        "environmentId": "$ENVIRONMENT_ID",
+        "shellCommand": "echo \"Installing Python...\" && apt-get update -qq && apt-get install -y python3 -qq && echo \"Python installed successfully\" && python3 --version && echo && echo \"Creating rename script...\" && echo \"import os\" > rename_file.py && echo \"# Read and display the original file content\" >> rename_file.py && echo \"with open(\\\"hello.txt\\\", \\\"r\\\") as f:\" >> rename_file.py && echo \"    content = f.read()\" >> rename_file.py && echo \"print(\\\"Original file contains:\\\", content.strip())\" >> rename_file.py && echo \"# Rename the file\" >> rename_file.py && echo \"os.rename(\\\"hello.txt\\\", \\\"hello_backup.txt\\\")\" >> rename_file.py && echo \"print(\\\"File renamed: hello.txt -> hello_backup.txt\\\")\" >> rename_file.py && echo && echo \"Running Python script...\" && python3 rename_file.py"
+      }
+    }
+  }' | jq -r '.result.structuredContent.stdout'
+```
+
+**Expected Output:**
+```
+Installing Python...
+Python installed successfully
+Python 3.11.2
+
+Creating rename script...
+
+Running Python script...
+Original file contains: Hello from remote shell!
+File renamed: hello.txt -> hello_backup.txt
+```
+
+### Step 3: Verify the renamed file and read its contents
+
+Now let's verify that the file was successfully renamed and read its contents to confirm the rename operation worked correctly:
+
+```bash
+curl -sS -X POST "$MCP_ENDPOINT" \
+  -H "Content-Type: application/json" \
+  -H "x-ms-apikey: $API_KEY" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "6",
+    "method": "tools/call",
+    "params": {
+      "name": "runShellCommandInRemoteEnvironment",
+      "arguments": {
+        "environmentId": "$ENVIRONMENT_ID",
+        "shellCommand": "echo \"Checking if rename was successful...\" && echo \"Files in directory:\" && ls -la *.txt *.py && echo && echo \"Reading contents of renamed file:\" && cat hello_backup.txt"
+      }
+    }
+  }' | jq -r '.result.structuredContent.stdout'
+```
+
+**Expected Output:**
+```
+Checking if rename was successful...
+Files in directory:
+-rw-r--r-- 1 root root   25 Nov 15 03:24 hello_backup.txt
+-rw-r--r-- 1 root root  276 Nov 15 03:25 rename_file.py
+
+Reading contents of renamed file:
+Hello from remote shell!
+```
+
+---
+
+## 9. Additional Practical Exercises (optional)
+
+Try these additional exercises:
+
+- Run other shell commands and capture their output
+- Install and use additional development tools in the remote environment  
+- Create more complex Python scripts that interact with multiple files
 
 ---
 
