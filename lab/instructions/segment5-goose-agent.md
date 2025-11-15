@@ -1,6 +1,6 @@
-# Segment 5 — Deploy the Goose Open Source Agent on Azure Container Apps (≤60 minutes)
+# Segment 5 - Deploy the Goose Open Source Agent on Azure Container Apps (≤60 minutes)
 
-> This segment extends the earlier GPU work by standing up the Goose AI agent stack (auth proxy, Goose web UI/CLI, Ollama-backed model server, optional MCP extensions) using the ready-to-run `goose-on-aca` template. Expect 45–60 minutes depending on whether you enable MCP integrations.
+> This segment extends the earlier GPU work by standing up the Goose AI agent stack (auth proxy, Goose web UI/CLI, Ollama-backed model server, optional MCP extensions) using the ready-to-run `goose-on-aca` template. Expect 45-60 minutes depending on whether you enable MCP integrations.
 
 ---
 
@@ -24,12 +24,12 @@
 
 ---
 
-## Task 1 — Prepare the Deployment Workspace (10 minutes)
+## Task 1 - Prepare the Deployment Workspace (10 minutes)
 1. In the wsl terminal in VS Code, change into the goose-on-aca directory:
-   ```bash
-   cd goose-on-aca
-   ```
-2. Review the project structure:
+```bash
+cd goose-on-aca
+```
+2. Review the project structure in the explorer on the left:
    - `azure.yaml` orchestrates Azure resources and application components.
    - `infra/` contains Bicep definitions for Container Apps, storage, and networking.
    - `app/goose/` packages the Goose agent, Nginx auth proxy, and Ollama model puller.
@@ -37,35 +37,52 @@
 
 ---
 
-## Task 2 — Deploy Goose with Azure Developer CLI (15 minutes)
+## Task 2 - Deploy Goose with Azure Developer CLI (15 minutes)
 1. Run `azd up` from the repo root:
-   ```bash
-   azd up
-   ```
-2. Supply prompted parameters:
-   - **Environment name** (e.g., `goose-prod`).
-   - **Azure subscription** and region (choose the GPU-enabled region eastus2).
-   - **Proxy Auth Password** — becomes the basic auth credential for the Nginx gateway. (e.g., `goosepw`)
-   - **Note** - please remember the password!
-   - **Resource Group** - choose the existing **my-gpu-demo-group**
-   - **Ollama host** (use the ACA URL/hostname from Segment 3 ( or another accessible Ollama service).
+```bash
+azd up
+```
+2. Login to azd:
+```bash
+azd auth login
+```
+3. Supply prompted parameters:
+
+**Note** - If you make any mistakes, start over by typing CTRL+C, then `azd down --purge` then start over with `azd up` 
+
+  - **Environment name** (e.g., `goose-prod`) (press enter)
+  - If asked for the **Azure subscription** choose the current subscription. (press enter)
+  - if asked for a **Resource Group** - choose 1. add a new group and enter a name (e.g., `goosegroup`) (press enter)
+  - If asked for a **location** type `westus3`(press enter)
+  - If asked, provide a **Proxy Auth Password** - becomes the basic auth credential for the Nginx gateway. (e.g., `goosepw`)
+  - **Note** - please remember the password!
+  
 3. The deployment provisions:
    - Container Apps environment + GPU workload profile.
    - Azure Container Registry, Storage (Azure Files) for model/config persistence.
    - Goose agent container, auth proxy, and Ollama model puller revision.
-4. Expect 15–20 minutes total; the longest step is pulling and loading the default model (qwen3:14b) on the GPU app.
+4. Expect 15-20 minutes total; the longest step is pulling and loading the default model (qwen3:14b) on the GPU app.
 
 > 🔍 Tip: Monitor progress in the Azure portal under **Container Apps > Revisions and replicas** to see when the Ollama init container finishes pulling the model.
 
 ---
 
-## Task 3 — Validate the Deployment (10 minutes)
+## Task 3 - Validate the Deployment (10 minutes)
 1. Retrieve outputs:
    ```bash
    azd env get-values
    ```
-   Note the Goose web URL, basic auth username (`goose`) and the password you set.
+
 2. Browse to the Goose portal (`https://<auth-proxy-url>`) and authenticate using basic auth.
+
+- Get the Goose proxy URL, Admin username (`Admin`) and the password you set.
+
+- The URL looks like this onscreen:
+
+(✓) Done: Deploying service nginx-auth-proxy
+Endpoint: https://aka.ms/p-roxy-goose-prod....
+
+
 3. Launch a CLI session from the portal console or via `az containerapp exec`:
    ```bash
    az containerapp exec \
@@ -81,7 +98,7 @@
 
 ---
 
-## Task 4 — (Optional, 15 minutes) Enable MCP Extensions
+## Task 4 - (Optional, 15 minutes) Enable MCP Extensions
 Goose supports several MCP servers; this template includes GitHub and Email MCP binaries. Enable them by setting the relevant environment variables on the Goose Container App and restarting the revision.
 
 ### GitHub MCP Server
@@ -114,7 +131,7 @@ az containerapp update \
 
 ---
 
-## Task 5 — Customize Models and Persistence (5 minutes)
+## Task 5 - Customize Models and Persistence (5 minutes)
 1. To switch to Azure OpenAI, add the following environment variables (matching your deployment):
    ```bash
    az containerapp update \
@@ -134,14 +151,6 @@ az containerapp update \
    - Logs: `/root/.local/state/goose/logs`
    Use these paths to back up configurations or inspect state.
 
----
-
-## Cleanup (5 minutes)
-- Tear down resources when finished to avoid GPU charges:
-  ```bash
-  azd down
-  ```
-- If reusing the environment, scale the Ollama container to zero replicas outside lab hours.
 
 ---
 
@@ -157,5 +166,39 @@ az containerapp update \
 
 ## References
 - Goose on ACA repository: https://github.com/simonjj/goose-on-aca
+- Goose Agent in Action: https://techcommunity.microsoft.com/t5/s/gxcuf89792/images/bS00NDYwMjE1LTRqYkt4Sg?revision=7
 - Goose component docs: https://block.github.io/goose/
 - Azure Container Apps GPU workload profiles: https://learn.microsoft.com/azure/container-apps/workload-profiles-overview#gpu-workload-profiles
+
+---
+
+## Bonus Exercise - Enable MCP Servers (Optional)
+
+To enable GitHub or Email MCP servers, update the environment variables in your deployed Container App:
+
+
+> **Important Note**
+> The current default model optimized to run on T4 (qwen3:14b) does not work with the Github MCP server (both stdio and streaming). It is hence suggested to upgrade both GPU profile and model if the user intends to use the Github MCP server.
+>
+> The default email provider is currently configured to be Gmail. The full configuration for the email servers (SMTP/IMAP), ports, SSL can be accessed via the default Goose configuration file located on the NFS file share (`/root/.config/goose/config.yaml`).
+
+
+Running the commands below will set the environment variables and regenerate the configuration (upon restart of the app) to include the appropriate section needed for the respective MCP server to be added to the Goose configuration.
+
+```bash
+# Update GitHub MCP 
+az containerapp update \
+  --name <goose-app-name> \
+  --resource-group <resource-group-name> \
+  --set-env-vars GITHUB_PERSONAL_ACCESS_TOKEN="ghp_your_token_here"
+
+# Update Email MCP 
+az containerapp update \
+  --name <goose-app-name> \
+  --resource-group <resource-group-name> \
+  --set-env-vars \
+    MCP_EMAIL_SERVER_PASSWORD="your_app_password" \
+    MCP_EMAIL_SERVER_EMAIL_ADDRESS="your-email@gmail.com" \
+    MCP_EMAIL_SERVER_FULL_NAME="Your Name" \
+    MCP_EMAIL_SERVER_USER_NAME="your-email@gmail.com"
+```
