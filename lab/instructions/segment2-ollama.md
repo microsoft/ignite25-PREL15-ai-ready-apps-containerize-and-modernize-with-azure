@@ -1,6 +1,6 @@
-# Segment 3 — Explore Ollama on Azure Container Apps (30 minutes)
+# Segment 2 - Explore Ollama on Azure Container Apps (30 minutes)
 
-> Reuse the GPU-enabled Container App from Segment 0/1 (`my-gpu-demo-app`) so you don’t provision an additional GPU revision. These steps assume that app is still deployed in the same resource group and region.
+> Reuse the GPU-enabled Container App from Segment 0/1 (`my-gpu-demo-app`) so you don't provision an additional GPU revision. These steps assume that app is still deployed in the same resource group and region.
 
 ---
 
@@ -12,7 +12,7 @@ In this segment you will:
 - Enable ingress on port `11434` for remote API calls
 - Pull multiple models (SmolLM2 1.7B, DeepSeek-R1 14B, GPT-OSS 20B) from inside the container
 - Compare model quality with a curated prompt pack
-- Exercise Ollama’s HTTP API using `curl`, `wget`, and PowerShell commands
+- Exercise Ollama's HTTP API using `curl`, `wget`, and PowerShell commands
 
 Estimated duration: **30 minutes**
 
@@ -28,13 +28,13 @@ Estimated duration: **30 minutes**
 
 ---
 
-## Task 1 — Reconfigure the GPU App to Run Ollama
+## Task 1 - Reconfigure the GPU App to Run Ollama
 
 **Goal:** Swap the container image in `my-gpu-demo-app` to `ollama/ollama`, expose port `11434`, and keep GPU acceleration enabled.
 
 1. **Open the Container App in Azure Portal**
 
-    - Go to <https://portal.azure.com> and navigate to **Resource groups > my-gpu-demo-group > my-gpu-demo-app**.
+    - Go to `https://portal.azure.com` and navigate to **Resource groups > my-gpu-demo-group > my-gpu-demo-app**.
 
 1. **Verify your app is on a T4 GPU workload profile**
 
@@ -79,9 +79,9 @@ Estimated duration: **30 minutes**
 
 ---
 
-## Task 2 — Pull Ollama Models from the Portal Console
+## Task 2 - Pull Ollama Models from the Portal Console
 
-**Goal:** Shell into the running container and pre-load the models you’ll test.
+**Goal:** Shell into the running container and pre-load the models you'll test.
 
 1. **Open the container console**
 
@@ -93,60 +93,66 @@ Estimated duration: **30 minutes**
 
 Type the following commands into the console:
 
-  `ps aux | grep ollama`
-  `ollama --version`
-  
+```bash
+  ps aux | grep ollama
+  ollama --version
+
+```
 You should get a response like this: 
 
-  ```bash
+  **ollama --version is x.xx.xx**
 
-  ollama --version is x.xx.xx
 
-  ```
 
 1. **Pull the requested models**
 
 Type the following commands into the console:
 
- `ollama pull smollm2:1.7b`
- `ollama pull deepseek-r1:14b`
- `ollama pull gpt-oss:20b`
+```bash
+ ollama pull smollm2:1.7b
+ ollama pull deepseek-r1:14b
+ ollama pull gpt-oss:20b
 
-    > Each download can take several minutes. Keep the console open until all pulls complete.
+ ```
+
+ **Note** Each download can take several minutes. Keep the console open until all pulls complete.
 
 1. **List installed models**
 
 Type the following commands into the console:
 
- `ollama list`
+```bash
+ ollama list
+```
 
-    You should see all three models with the **latest** digest.
+You should see all three models with the **latest** digest.
 
 ---
 
-## Task 3 — Compare Model Quality with Prompt Pack
+## Task 3 - Compare Model Quality with Prompt Pack
 
 Use the console  to run these prompts against each model. The goal is to spot differences across model sizes.
 
-| Prompt | What to Look For |
-| --- | --- |
-| `Explain the concept of vector databases to a new data engineer in under three sentences.` | Clarity + factual accuracy |
-| `Write a Python function that generates a haiku using a small in-memory word list.` | Code correctness + creativity |
-| `Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I?` | Chain-of-thought reasoning |
-
-Example CLI usage inside the console:
-
-
- `ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."`
- `ollama run deepseek-r1:14b Write a Python function that generates a haiku using a small in-memory word list."`
- `ollama run gpt-oss:20b "Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I?"`
-
+ ```bash
+ ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."
+ ```
+ ```bash
+ ollama run deepseek-r1:14b "Write a Python function that generates a haiku using a small in-memory word list."
+ ```
+ ```bash
+ ollama run gpt-oss:20b "Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I?"`
+```
 
 Pay attention to latency, depth of reasoning, and hallucination risk for each model. Experiment with your own prompts as well!
+| Prompt | What to Look For |
+| --- | --- |
+| Explain the concept of vector databases to a new data engineer in under three sentences. | Clarity + factual accuracy |
+| Write a Python function that generates a haiku using a small in-memory word list. | Code correctness + creativity |
+| Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I? | Chain-of-thought reasoning |
 
 ---
 
-## Task 4 — Explore the Ollama REST API
+## Task 4 - Explore the Ollama REST API
 
 **Goal:** Interact with the Ollama server remotely using typical dev tooling.
 
@@ -227,3 +233,4 @@ Both commands will return detailed metadata about the specified model, including
 - ✅ You called the Ollama REST API using multiple tools
 
 **Next steps:** Consider layering Azure API Management or Dapr in front of Ollama, adding caching (Redis), and wiring Application Insights traces for end-to-end observability.
+

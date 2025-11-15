@@ -1,4 +1,4 @@
-# Segment 4 — Use an MCP server with shell dynamic sessions in Azure Container Apps (45 minutes)
+# Segment 4 - Use an MCP server with shell dynamic sessions in Azure Container Apps (45 minutes)
 
 > Audience: platform and infra engineers who will provision and operate shell based session pools using MCP to enable agents and tools to connect and run shell commands remotely.
 
@@ -17,42 +17,48 @@ Estimated duration: 45 minutes
 
 ---
 
-## Login to Azure
-Open VS Code and use the WSL terminal for the following commands.
-
-If you are not logged into Azure already, run the following command to login. Use the credentials from the Resources tab in the lab to login.
-
-```azure cli
-az login
-```
-
----
-
 ## 1. Set Up Environment Variables
 
-With **Visual Studio Code** open, navigate to the terminal at the bottom of the window.
+Start by opening **Visual Studio Code** from your desktop and navigating to the terminal at the bottom of the window.
+
+If the wsl terminal is not already open, click on the down arrow next to the **+** button and select **Ubuntu (WSL) (Default)**. This will open a terminal that we'll use to create our resources.
+
+## Clear credentials and Login to Azure
+
+Use the wsl terminal for the folllowing commands.
+
+Clear the current account credentials and re-login to VS Code. If prompted, Use the credentials from the Resources tab in the lab to login.
+
+```azcli
+az account clear
+az login
+```
 
 In your terminal, set the following environment variables for your subscription, resource group, session pool name, and location to be used for creating resources.
 
 First, query for your Azure subscription ID and set the value to a variable:
 
-```sh
+```bash
 export SUBSCRIPTION_ID=$(az account show --query id --output tsv | tr -d '\r')
+echo $SUBSCRIPTION_ID
 ```
 
 Set the variables used in this procedure.
 
-```sh
+```bash
 export RESOURCE_GROUP=my-shell-session-rg
 export SESSION_POOL_NAME=myshellpool
 export LOCATION=westus3
+echo $RESOURCE_GROUP
+echo $SESSION_POOL_NAME
+echo $LOCATION
 ```
 
 You'll use these variables to create the resources in the following steps.
 
 Next, create a resource group:
 
-```sh
+```azcli
 az group create --name $RESOURCE_GROUP --location $LOCATION
 ```
 
@@ -107,7 +113,7 @@ In this step you'll use the ARM template below to create a shell session pool re
 
 After the file is saved you can go back to the terminal and navigate to the file path where you saved the json file. Then run the following command to deploy the ARM template to your existing resource group:
 
-```azurecli
+```azcli
 az deployment group create --resource-group $RESOURCE_GROUP --template-file deploy.json --name $SESSION_POOL_NAME --parameters name=$SESSION_POOL_NAME location=$LOCATION
 ```
 
@@ -116,7 +122,7 @@ Once completed, this will create a dynamic shell session resource that is MCP en
 ---
 
 ## 3. Retrieve the MCP Server Endpoint
-After the resource is created, obtain the MCP endpoint using `az rest` against the session pool ARM resource (2025-02-02-preview API). Example:
+After the resource is created, obtain the MCP endpoint using **az rest** against the session pool ARM resource (2025-02-02-preview API). Example:
 
 ```bash
 export MCP_ENDPOINT=$(az rest --method GET --uri "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.App/sessionPools/$SESSION_POOL_NAME?api-version=2025-02-02-preview" --query "properties.mcpServerSettings.mcpServerEndpoint" -o tsv | tr -d '\r')
@@ -168,14 +174,10 @@ echo $ENVIRONMENT_RESPONSE
 
 View the output from the previous commands, extract/copy the `environmentId` from the response and set it as an environment variable.
 
-For example, if the response contains `"environmentId": "0d72ca36-7599-48d0-b584-51e441e72bdc"`, then run:
-
 ```bash
-export ENVIRONMENT_ID="<your-environment-id>"
+export ENVIRONMENT_ID="<paste-your-environment-id-here>"
 echo $ENVIRONMENT_ID
 ```
-
-**Note:** Replace the example ID above with the actual `environmentId` value from your response.
 
 ---
 
@@ -320,12 +322,6 @@ Try these additional exercises:
 
 ---
 
-## 10. Cleanup
-When finished, delete the session pool resource group to avoid lingering costs:
-
-```bash
-az group delete --name $RESOURCE_GROUP --no-wait --yes
-```
 
 ---
 
