@@ -1,4 +1,4 @@
-# Segment 3 — Explore Ollama on Azure Container Apps (30 minutes)
+# Segment 2 — Explore Ollama on Azure Container Apps (30 minutes)
 
 > Reuse the GPU-enabled Container App from Segment 0/1 (`my-gpu-demo-app`) so you don’t provision an additional GPU revision. These steps assume that app is still deployed in the same resource group and region.
 
@@ -34,7 +34,7 @@ Estimated duration: **30 minutes**
 
 1. **Open the Container App in Azure Portal**
 
-    - Go to <https://portal.azure.com> and navigate to **Resource groups > my-gpu-demo-group > my-gpu-demo-app**.
+    - Go to `https://portal.azure.com` and navigate to **Resource groups > my-gpu-demo-group > my-gpu-demo-app**.
 
 1. **Verify your app is on a T4 GPU workload profile**
 
@@ -138,7 +138,7 @@ Example CLI usage inside the console:
 
 
  `ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."`
- `ollama run deepseek-r1:14b Write a Python function that generates a haiku using a small in-memory word list."`
+ `ollama run deepseek-r1:14b "Write a Python function that generates a haiku using a small in-memory word list."`
  `ollama run gpt-oss:20b "Reason through this riddle: You see me once in a year, twice in a week, and never in a day. What am I?"`
 
 

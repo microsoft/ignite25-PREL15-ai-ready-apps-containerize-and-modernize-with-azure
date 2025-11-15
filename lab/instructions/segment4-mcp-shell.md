@@ -66,7 +66,7 @@ az group create --name $RESOURCE_GROUP --location $LOCATION
 In this step you'll use the ARM template below to create a shell session pool resource with MCP server enabled.
 
 - In Visual Studio Code, check for a file called deploy.json.  
-- If It;s there, verify that it matches the file below.  
+- If It's there, verify that it matches the file below.  
 - Otherwise, click on New File in the Start menu and create a new file named `deploy.json` . Once created, copy the following contents into the file and save it.
 
 ```json
@@ -163,17 +163,16 @@ export ENVIRONMENT_RESPONSE=$(curl -sS -X POST "$MCP_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "x-ms-apikey: $API_KEY" \
   -d '{ "jsonrpc": "2.0", "id": "2", "method": "tools/call", "params": { "name": "launchShellEnvironment", "arguments": {} } }')
-
 echo $ENVIRONMENT_RESPONSE
 ```
 
 View the output from the previous commands, extract/copy the `environmentId` from the response and set it as an environment variable:
 
-"0d72ca36-7599-48d0-b584-51e441e72bdc"
-
 ```bash
-export ENVIRONMENT_ID="ENVIRONMENT_ID"
+export ENVIRONMENT_ID="<paste-your-environment-id-here>"
 echo $ENVIRONMENT_ID
+```
+
 ---
 
 ## 7. Run Commands in the Remote Shell

@@ -17,7 +17,7 @@
 - Azure CLI and Azure Developer CLI (`azd`) installed and logged in
 - Subscription with `Microsoft.App`, `Microsoft.ContainerRegistry`, and `Microsoft.Storage` providers registered
 - GPU workload profile quota available in one of the supported regions (West US 3, Australia East, Sweden Central, or other current GPU regions)
-- Ollama running in the same ACA environment (from Segment 3) or another accessible endpoint for model hosting
+- Ollama running in the same ACA environment (from Segment 2) or another accessible endpoint for model hosting
 - Basic auth password you are comfortable sharing with lab participants (prompted during `azd up`)
 
 > 💡 **Time budget**: 10 minutes for repo prep, 15 minutes for deployment, 10 minutes for validation, 15 minutes for MCP integrations, 5 minutes for cleanup/recap.
@@ -33,7 +33,7 @@
    - `azure.yaml` orchestrates Azure resources and application components.
    - `infra/` contains Bicep definitions for Container Apps, storage, and networking.
    - `app/goose/` packages the Goose agent, Nginx auth proxy, and Ollama model puller.
-3. Confirm Ollama ingress URL or internal hostname from Segment 3; you will need it when prompted during `azd up`.
+3. Confirm Ollama ingress URL or internal hostname from Segment 2; you will need it when prompted during `azd up`.
 
 ---
 
