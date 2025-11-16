@@ -1,6 +1,13 @@
-# AI-Ready Apps: Containerize and Modernize with Azure
+<p align="center">
+<a href="https://ignite.microsoft.com/">
+<img src="img/Banner-ignite-25.png" alt="Microsoft Ignite 2025" width="1200"/>
+</a>
+</p>
 
-[![Microsoft Ignite 2025](img/banner.png)](https://ignite.microsoft.com/)
+# [Microsoft Ignite 2025](https://ignite.microsoft.com)
+
+
+## 🔥 AI-Ready Apps: Containerize and Modernize with Azure
 
 Welcome to the Microsoft Ignite 2025 session **PREL15: AI-Ready Apps - Containerize and Modernize with Azure**!
 
@@ -97,6 +104,25 @@ Then navigate to `http://localhost:8000`
 - **FastAPI**: Modern web framework for building APIs
 - **Docker**: Containerization platform
 
+## 📚 Learning Resources
+
+| Topic | Link |
+|:------|:-----|
+| Azure Container Apps Overview | [https://learn.microsoft.com/azure/container-apps/overview](https://learn.microsoft.com/azure/container-apps/overview) |
+| Azure OpenAI Service Documentation | [https://learn.microsoft.com/azure/ai-services/openai/overview](https://learn.microsoft.com/azure/ai-services/openai/overview) |
+| Azure OpenAI Quickstart | [https://learn.microsoft.com/azure/ai-services/openai/quickstart](https://learn.microsoft.com/azure/ai-services/openai/quickstart) |
+| Ollama Documentation | [https://ollama.com/](https://ollama.com/) |
+| Azure Container Apps Dynamic Sessions | [https://learn.microsoft.com/azure/container-apps/sessions](https://learn.microsoft.com/azure/container-apps/sessions) |
+| Code Interpreter in Dynamic Sessions | [https://learn.microsoft.com/azure/container-apps/sessions-code-interpreter](https://learn.microsoft.com/azure/container-apps/sessions-code-interpreter) |
+| LangChain Python Documentation | [https://python.langchain.com/](https://python.langchain.com/) |
+| LangChain Azure Integration | [https://python.langchain.com/docs/integrations/platforms/microsoft](https://python.langchain.com/docs/integrations/platforms/microsoft) |
+| Model Context Protocol (MCP) | [https://modelcontextprotocol.io/](https://modelcontextprotocol.io/) |
+| Azure Container Apps Security | [https://learn.microsoft.com/azure/container-apps/security](https://learn.microsoft.com/azure/container-apps/security) |
+| Azure Well-Architected Framework | [https://learn.microsoft.com/azure/well-architected/](https://learn.microsoft.com/azure/well-architected/) |
+| Learn at Ignite 2025 | [https://aka.ms/LearnAtIgnite](https://aka.ms/LearnAtIgnite) |
+| Ignite 2025 Next Steps | [https://aka.ms/Ignite25-Next-Steps](https://aka.ms/Ignite25-Next-Steps?ocid=ignite25_nextsteps_cnl) | 
+ 
+
 ## 📋 Additional Resources
 
 - [Azure Container Apps Documentation](https://learn.microsoft.com/azure/container-apps/)
@@ -106,6 +132,10 @@ Then navigate to `http://localhost:8000`
 - [Microsoft Ignite 2025](https://ignite.microsoft.com/)
 - [Microsoft Learn At Ignite](https://aka.ms/LearnAtIgnite)
 - [Ignite 2025 Next Steps](https://aka.ms/ignite25-next-steps)
+
+
+
+
 
 ## 🤝 Contributing
 
