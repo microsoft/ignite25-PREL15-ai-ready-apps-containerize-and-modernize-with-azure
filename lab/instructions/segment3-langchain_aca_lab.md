@@ -1,4 +1,5 @@
-# Segment 3 — LangChain + Azure Container Apps Dynamic Sessions
+
+# Segment 3 - LangChain + Azure Container Apps Dynamic Sessions
 
 ## Title
 Build a LangChain Agent with Azure Container Apps Dynamic Sessions (Code Interpreter)
@@ -8,7 +9,7 @@ Build a LangChain Agent with Azure Container Apps Dynamic Sessions (Code Interpr
 ## Lab Overview
 
 In this part, you will:
-- Use a pre-provisioned Azure Container Apps **Dynamic Session Pool** for Python code execution.
+- Use a pre-provisioned Azure Container Apps **Dynamic Session Pool** for Python code execution in a code interpreter.
 - Connect the pool to a **LangChain agent** via the **langchain-azure-dynamic-sessions** package.
 - Expose a **FastAPI web API** with endpoints for natural language queries and file analysis.
 - Validate with tasks: math calculation, plotting, and CSV summarization.
@@ -17,11 +18,15 @@ In this part, you will:
 
 **LangChain** is a powerful framework for building applications powered by large language models (LLMs). It provides a standardized interface for connecting LLMs with external tools, data sources, and APIs. In this lab, LangChain acts as the orchestration layer that:
 - Connects Azure OpenAI's GPT models with the Azure Container Apps Dynamic Sessions code execution environment
-- Manages the conversation flow between user queries and code execution
+- Manages the conversation flow between user queries and code interpreters
 - Handles tool selection and parameter passing automatically
 - Provides built-in retry logic, error handling, and response parsing
 
-By using LangChain, you can build sophisticated AI agents that reason about when to execute code, what code to write, and how to interpret the results—all with minimal custom code.
+### What are Code Interpreters?
+
+**Code interpreters** are secure, isolated environments that allow AI agents to write and execute code dynamically in response to user queries. Unlike traditional chatbots that can only generate text responses, code interpreters enable AI systems to perform actual computations, analyze data, create visualizations, and manipulate files in real-time. This capability transforms AI agents from conversational tools into powerful problem-solving assistants that can handle complex mathematical calculations, data analysis tasks, and generate visual outputs like charts and graphs. Azure Container Apps Dynamic Sessions provides enterprise-grade code interpreter functionality with built-in security, scalability, and integration with popular AI frameworks like LangChain.
+
+By using LangChain with code interpreters, you can build sophisticated AI agents that reason about when to execute code, what code to write, and how to interpret the results-all with minimal custom code.
 
 ---
 
@@ -32,17 +37,19 @@ By using LangChain, you can build sophisticated AI agents that reason about when
 
 ## Lab Tasks
 
-### Task 1 — Authenticate with Azure
+### Task 1 - Authenticate with Azure
 
 ---
 
 #### Step 1: Sign in to Azure
 
-Authenticate with your Azure subscription using the Azure CLI.
+Open VS Code and authenticate with your Azure subscription using the Azure CLI.  Use the wsl terminal and type:
 
 ```bash
 az login
 ```
+- Follow the instructions for signing in.  
+- If credentials are requested, open the **Resources** tab above and use the credentials from the **Azure Portal** section.
 
 ---
 
@@ -58,7 +65,7 @@ az account show
 
 ---
 
-### Task 2 — Set Up the Application Environment
+### Task 2 - Set Up the Application Environment
 
 **Description:** In this task, you'll use a pre-provisioned sample application directory and Python virtual environment, with pre-installed dependencies. 
 
@@ -74,16 +81,16 @@ cd container-apps-dynamic-sessions-samples/langchain-python-webapi
 ```
 
 **What this does:** The sample code has been pre-cloned into your lab environment at this location. This directory contains:
-- **main.py** — The FastAPI application with LangChain integration
-- **.env.sample** — Sample configuration file with Azure resource endpoints and credentials
-- **requirements.txt** — Python package dependencies
+- **main.py** - The FastAPI application with LangChain integration
+- **.env.sample** - Sample configuration file with Azure resource endpoints and credentials
+- **requirements.txt** - Python package dependencies
 - Additional helper modules and documentation
 
 ---
 
 ---
 
-### Task 3 — Creating and populating the .env file
+### Task 3 - Creating and populating the .env file
 
 **Description:** Before running the application, let's understand the key resources that make it work.
 
@@ -93,10 +100,10 @@ cd container-apps-dynamic-sessions-samples/langchain-python-webapi
 
 The **.env** file contains all the configuration settings needed to connect your application to Azure services. It stores:
 
-- **POOL_MANAGEMENT_ENDPOINT** — The management endpoint for your Azure Container Apps Dynamic Session Pool
-- **AZURE_OPENAI_ENDPOINT** — The endpoint URL for your Azure OpenAI service
-- **AZURE_OPENAI_DEPLOYMENT** — The name of your deployed GPT model (e.g., **gpt-4o-mini**)
-- **AZURE_OPENAI_API_KEY** — The API key to use for Azure OpenAI calls
+- **POOL_MANAGEMENT_ENDPOINT** - The management endpoint for your Azure Container Apps Dynamic Session Pool
+- **AZURE_OPENAI_ENDPOINT** - The endpoint URL for your Azure OpenAI service
+- **AZURE_OPENAI_DEPLOYMENT** - The name of your deployed GPT model (e.g., **gpt-4o-mini**)
+- **AZURE_OPENAI_API_KEY** - The API key to use for Azure OpenAI calls
 
 **Why this is valuable:** 
 - Separates configuration from code, making it easy to switch between development, staging, and production environments
@@ -113,18 +120,19 @@ The **.env** file contains all the configuration settings needed to connect your
 Create a new **.env** file using the VS Code wsl terminal:
 
  ```bash
+ cd container-apps-dynamic-sessions-samples/langchain-python-webapi
  cp .env.sample .env
 ```
 
-And open the new .env file in the explorer on the right.
+And open the new .env file in the explorer on the left.
 
-1. If you are not already logged in to Azure, **Open a browser and sign:**
+1. If you are not already logged in to Azure, **Open a browser and sign in:**
    
    - Open your browser and go to the Azure Portal: `https://portal.azure.com`
    - Follow the instructions for signing in.  
    - For credentials, Use the **User Name** and **TAP** from the **Azure Portal** section of the **Resources** tab above.
 
-Set the following variables:
+Loocate and copy/paste the following variables into your .env file:
 
 2. **Pool Management Endpoint** 
 - In the Azure Portal, search for `Container App Session Pool` and click on **Container App Session Pool** .  Open the Container App Session Pool resource displayed, then copy the Pool Management Endpoint displayed on the top right and paste it into the .env file.  
@@ -141,8 +149,9 @@ POOL_MANAGEMENT_ENDPOINT=<Pool Management Endpoint>
 AZURE_OPENAI_ENDPOINT=<Endpoint>
 AZURE_OPENAI_API_KEY=<KEY 1>  
 ```
+4. **Model Name**
 
--From the Azure OpenAI resource, click on **Go to Azure AI Foundry Portal** towards the top on the left.   
+-From Keys and Endpoint, click on **Overview** on the top left then click on **Go to Azure AI Foundry Portal** towards the top on the left.   
 -If you are asked to log in again, follow the same steps from the previous login process.  
 -Once in the foundry, click on **Deployments** on the left, and copy and paste the **Model Name** into the .env file.
 
@@ -150,7 +159,7 @@ AZURE_OPENAI_API_KEY=<KEY 1>
 AZURE_OPENAI_DEPLOYMENT=<Model Endpoint>
 ```
 
-- Once complete, you should have four <values> in your new .env file.  
+- Once complete, you should have four values in your new .env file.  
 - save the .env file
 
 ```bash
@@ -159,16 +168,6 @@ AZURE_OPENAI_ENDPOINT=<Endpoint>
 AZURE_OPENAI_API_KEY=<KEY 1>  
 AZURE_OPENAI_DEPLOYMENT=<Model Endpoint>
 ```
-
-
-**Resource Management > Keys and Endpoint**  and copy the following values:
-
-**Why this is valuable:** 
-- Separates configuration from code, making it easy to switch between development, staging, and production environments
-- Keeps sensitive information (endpoints and identifiers) out of source code
-- Follows the "twelve-factor app" methodology for cloud-native applications
-- The **.env** file has been pre-configured with your lab environment's resource endpoints
-
 **Security note:** In production environments, you would use Azure Key Vault or managed identities instead of storing credentials in files.
 
 ---
@@ -187,6 +186,10 @@ An isolated Python environment has already been created and populated with appli
 
 Activate the virtual environment so that Python commands use the isolated environment.
 
+Make sure that you are in the application directory:
+
+**ACASamples/container-apps-dynamic-sessions-samples/langchain-python-webapi**
+
 ```bash
 source venv/bin/activate
 ```
@@ -202,17 +205,17 @@ source venv/bin/activate
 the command **pip install -r requirements.txt** preinstalled all required Python packages from the requirements file.
 
 **What this did:** Installs the following key packages:
-- **fastapi** — Modern web framework for building APIs
-- **uvicorn** — ASGI server for running FastAPI applications
-- **langchain** & **langchain-openai** — LangChain framework with Azure OpenAI integration
-- **langchain-azure-dynamic-sessions** — Integration with Azure Container Apps Dynamic Sessions
-- **pydantic** — Data validation and settings management
-- **python-multipart** — File upload support for FastAPI
+- **fastapi** - Modern web framework for building APIs
+- **uvicorn** - ASGI server for running FastAPI applications
+- **langchain** & **langchain-openai** - LangChain framework with Azure OpenAI integration
+- **langchain-azure-dynamic-sessions** - Integration with Azure Container Apps Dynamic Sessions
+- **pydantic** - Data validation and settings management
+- **python-multipart** - File upload support for FastAPI
 
 **Note:** Dependencies are preinstalled, as it typically takes 10 minutes or more to download and install all dependencies.
 
 
-### Task 4 — Run the Application
+### Task 4 - Run the Application
 
 **Description:** In this task, you'll start the FastAPI application and prepare to test its endpoints.
 
@@ -228,9 +231,9 @@ The **main.py** file is the heart of your application. It:
    - Configures a LangChain agent with the code execution capability
 
 2. **Defines FastAPI endpoints:**
-   - **/ask** — Accepts natural language queries and routes them to the LangChain agent
-   - **/summarize-csv** — Handles CSV file uploads and uses the agent to analyze the data
-   - **/health** — Provides a health check endpoint for monitoring
+   - **/ask** - Accepts natural language queries and routes them to the LangChain agent
+   - **/summarize-csv** - Handles CSV file uploads and uses the agent to analyze the data
+   - **/health** - Provides a health check endpoint for monitoring
 
 3. **Manages the agent execution flow:**
    - Receives user input
@@ -255,6 +258,10 @@ Launch the FastAPI application with auto-reload enabled.
 uvicorn main:app --reload
 ```
 
+Once you see this message, the application is running:
+
+**INFO:     Application startup complete.**
+
 **What this does:**
 - Starts the FastAPI application defined in **main.py**
 - The **--reload** flag watches for file changes and automatically restarts the server
@@ -273,19 +280,25 @@ INFO:     Application startup complete.
 
 ---
 
-### Task 5 — Validate the API
+### Task 5 - Validate the API
 
 **Description:** This task verifies that your LangChain agent can successfully execute Python code in the Azure Dynamic Sessions pool. You'll test three scenarios: mathematical calculations, data visualization, and CSV file analysis.
 
+#### 1. **Test in your browser:**
+   
+- Navigate to `http://localhost:8000` to access the automatically generated FastAPI interactive documentation, where you can test the endpoints by expanding and using the web interface.
+
+
+#### 2. **Test using curl:**
+
 - In VS Code, open a new wsl terminal with the **+** symbol above the existing terminal, and paste in the following curl commands 
+- After executing curl commands, check back on the original wsl terminal to see the execution and response from the application
 
 1. **Math calculation test:**
    
    Test the agent's ability to execute Python code for mathematical operations. This query asks the agent to use Python to calculate the mean of a list of numbers. The agent should recognize it needs to use the code execution tool and return the computed result.
    ```bash
-   curl -s http://localhost:8000/ask \
-     -H "Content-Type: application/json" \
-     -d '{"input":"Compute the mean of [1,2,3,100] using Python in the tool"}'
+   curl 'http://localhost:8000/chat?message=Calculate%20the%20mean%20of%201,2,3,100%20using%20Python'
    ```
    
    Expected result: The agent should return approximately 26.5 as the mean value.
@@ -294,26 +307,10 @@ INFO:     Application startup complete.
    
    Test the agent's ability to generate plots and analyze visualizations. This query requires the agent to use matplotlib to create a plot and analyze the results.
    ```bash
-   curl -s http://localhost:8000/ask \
-     -H "Content-Type: application/json" \
-     -d '{"input":"Plot sin(x) from -1 to 1 and report the peak value."}'
+   curl 'http://localhost:8000/chat?message=Plot%20sin(x)%20from%20-1%20to%201%20and%20report%20the%20peak%20value'
    ```
    
-   Expected result: The agent should create a sine wave plot and report that the peak value is 1.0 (at x ≈ π/2 ≈ 1.57, but since the range is -1 to 1, it should note the function is increasing throughout).
-
-3. **CSV file analysis test:**
-   
-   Test the agent's ability to analyze uploaded CSV files. Replace `/path/to/file.csv` with the path to an actual CSV file. The agent will load the file and provide a summary using pandas.
-   ```bash
-   curl -s -F "file=@/path/to/file.csv" \
-     http://localhost:8000/summarize-csv
-   ```
-   
-   Expected result: The agent should return statistical summaries and insights about the CSV data, such as column names, data types, row counts, and basic statistics.
-
-4. **Test in your browser (optional):**
-   
-   You can also navigate to `http://localhost:8000` to access the automatically generated FastAPI interactive documentation, where you can test the endpoints using a web interface.
+   Expected result: Plot sin(x) from -1 to 1 and calculate that the peak value is approximately 0.8415.".
 
 ---
 
@@ -321,7 +318,7 @@ INFO:     Application startup complete.
 
 ### Common Issues and Solutions
 
-- **Verify preprequisites**
+- **Verify prerequisites**
 
 - Active Azure subscription  
 - Azure CLI with Container Apps extension
@@ -330,7 +327,7 @@ INFO:     Application startup complete.
 - If its not installed, install it via this command:
 (`az extension add --name containerapp --upgrade --allow-preview true -y`)  
 - Python 3.10+ and Git installed locally  - type `python3`
-- Azure OpenAI resource with a deployed model (e.g., gpt-35-turbo or gpt-4)
+- Azure OpenAI resource with a deployed model (e.g., gpt-4o-mini)
 
 - **Sample source code is not located at documents/ACASamples**
   - **Cause:** For some reason the sample code was not automatically cloned into your local lab environment 
