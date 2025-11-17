@@ -192,7 +192,7 @@ This will display all models currently available on your Ollama server.
   ```bash
   curl $OLLAMA_URL/api/show \
   -H "Content-Type: application/json" \
-  -d '{"model":"deepseek-r1:14b"}'
+  -d '{"model":"smollm2:1.7b"}'
   ```
 
 Both commands will return detailed metadata about the specified model, including its parameters, architecture, and system requirements.
@@ -207,7 +207,7 @@ Run the following command to test text generation using curl:
   curl $OLLAMA_URL/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "deepseek-r1:14b",
+    "model": "smollm2:1.7b",
     "prompt": "Explain the concept of vector databases."
   }'
   ```
@@ -222,7 +222,7 @@ Run the following command to test text generation using curl:
     curl $OLLAMA_URL/api/generate \
       -H "Content-Type: application/json" \
       -d '{
-        "model": "deepseek-r1:14b",
+        "model": "smollm2:1.7b",
         "prompt": "Explain the concept of vector databases.",
         "stream": false
       }' | jq -r '.response'
