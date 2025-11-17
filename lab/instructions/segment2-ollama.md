@@ -24,8 +24,6 @@ Estimated duration: **30 minutes**
 - Existing Container App `my-gpu-demo-app` deployed in `my-gpu-demo-group`
 - Azure subscription with GPU workload profile enabled (already set up in the Skillable lab)
 
-> ⚠️ **Cost note:** Leaving the GPU-enabled revision running will continue to accrue charges. Remember to scale to zero or delete the resource group after completing the lab.
-
 ---
 
 ## Task 1 - Reconfigure the GPU App to Run Ollama
@@ -57,7 +55,6 @@ Estimated duration: **30 minutes**
     - Select **Add** and provide the following environment variables:
 
         - Set **Name** to `OLLAMA_HOST`, choose **Manual entry**, and enter the value `0.0.0.0`.
-        - Add another environment variable with **Manual entry** named `OLLAMA_NUM_PARALLEL`, set the value to `2`. This will allow Ollama to process multiple inference requests in parallel.
 
     - Click **Save as a new revision**. 
     - This will take a few moments to deploy the new revision. Select the notification bell in the top right to see the status of the ongoing deployment.
@@ -131,7 +128,7 @@ You should see all three models with the **latest** digest.
 
 ## Task 3 - Compare Model Quality with Prompt Pack
 
-Use the console  to run these prompts against each model. The goal is to spot differences across model sizes.
+Use the console  to run these prompts against each model. The goal is to spot differences across the models.
 
  ```bash
  ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."
@@ -221,7 +218,18 @@ You'll see the response stream in real-time as the model generates text.
 
 Both commands will return detailed metadata about the specified model, including its parameters, architecture, and system requirements.
 
-> 🔐 Tip: For production deployments, restrict ingress to private endpoints or secure the API with Azure Container Apps authentication.
+> Tip: For production deployments, you can deploy your inferencing server applications (in this case the Ollama app) an environment integrated with your own virtual networks or behind private endpoints. You can also add managed identity rules for who can access the app. This keeps model traffic on trusted networks and ensures only authorized callers can reach sensitive data.
+
+---
+
+## Persist models and reduce cold starts in production
+
+Serverless scaling in Azure Container Apps are great as they can autoscale into zero. However, the storage isn't persisted which means you have to redownload models after each scale-to-zero event which can cause significant coldstart. Below, are patterns we see customers adopt to improve their cold start times in production. These are also our recommendations.
+
+1. Add an [Azure Files volume mount](https://learn.microsoft.com/azure/container-apps/storage-mounts-azure-files?tabs=bash) to your Azure Container App - By adding a volume mount, your models can be stored persistently, preventing the need to redownload them after scaling to zero. Instead, models are loaded from the mounted volume, significantly reducing cold start times. For an Ollama contianer image, you would mount the volume at `/var/lib/ollama`.
+1. Customers also will set cron scalars and other scalars to ensure that the GPUs are pre-warmed prior to expected traffic spikes.
+1. Use Azure Container Registry artifact streaming to enable your container to startup faster by streaming layers on demand.
+1. Set a minimum replica count during business hours - By configuring your Container App to maintain at least one running replica during peak usage times, you can ensure that the application is always ready to handle requests without the latency associated with cold starts.
 
 ---
 
@@ -232,5 +240,7 @@ Both commands will return detailed metadata about the specified model, including
 - ✅ Prompt pack highlights capability differences across 1.7B, 14B, and 20B parameter models
 - ✅ You called the Ollama REST API using multiple tools
 
-**Next steps:** Consider layering Azure API Management or Dapr in front of Ollama, adding caching (Redis), and wiring Application Insights traces for end-to-end observability.
+## Additional resources
 
+- [Gpt-oss on Azure Container Apps](https://techcommunity.microsoft.com/blog/appsonazureblog/open-ais-gpt-oss-models-on-azure-container-apps-serverless-gpus/4440836)
+- [Deepseek-r1 on Azure Container Apps](https://techcommunity.microsoft.com/blog/appsonazureblog/deepseek-r1-on-azure-container-apps-serverless-gpus/4371463)
