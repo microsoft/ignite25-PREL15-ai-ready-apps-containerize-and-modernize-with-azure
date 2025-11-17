@@ -233,7 +233,7 @@ The **main.py** file is the heart of your application. It:
    - Configures a LangChain agent with the code execution capability
 
 2. **Defines FastAPI endpoints:**
-   - **/ask** - Accepts natural language queries and routes them to the LangChain agent
+   - **/chat** - Accepts natural language queries and routes them to the LangChain agent
    - **/summarize-csv** - Handles CSV file uploads and uses the agent to analyze the data
    - **/health** - Provides a health check endpoint for monitoring
 
