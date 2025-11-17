@@ -146,13 +146,11 @@ In this part, you will:
 
 ### Task 3 - Keep One Replica Warm (Reduce Cold Start)
 
-Azure Container Apps serverless GPUs automatically scale your application to zero when idle to save costs. Scaling back out from zero triggers a GPU cold start: provisioning the container, initializing drivers, and loading model assets adding cold start time to the first request. To ensure the lab completes without waiting on cold starts, you'll configure a minimum replica of 1 so one GPU instance stays warm during the exercise. We'll discuss cold start improvement strategies later in the lab.
+Azure Container Apps serverless GPUs automatically scale your application to zero when idle to save costs. Scaling back out from zero triggers a GPU cold start: provisioning the container, initializing drivers, and loading model assets add cold start time to the first request. To ensure the lab completes without waiting on cold starts, you'll configure a minimum replica of 1 so one GPU instance stays warm during the exercise. We'll discuss cold start improvement strategies later in the lab.
 
 1. **Open Scale settings:**
    - In the left menu under **Application**, select **Scale**.
-
-2. **Set replica counts:**
-   - **Min replicas:** `1`
+   - Set the **Min replicas** to `1`
    - Select **Save as a new revision**.
 
 3. **Confirm running replica:**
@@ -167,7 +165,7 @@ Azure Container Apps serverless GPUs automatically scale your application to zer
 
 ### Task 4 - Monitor GPU Performance
 
-**Description:** Azure Container Apps provides tools to monitor your GPU utilization and performance. In this task, you'll use the console to access your running container and check GPU metrics using NVIDIA's monitoring tools.
+**Description:** Azure Container Apps provides tools to monitor your GPU utilization and performance. In this task, you'll use the console to access your running container and see information about your GPU and test connectivity to external sources.
 
 1. **Access the container console via Azure Portal:**
    
@@ -184,14 +182,14 @@ Azure Container Apps serverless GPUs automatically scale your application to zer
    
    - In the **Choose startup command** dialog, select `/bin/bash`
    - Click **Connect**
-   - Wait for the shell prompt to appear. This is the Container App Console, which is useful for troubleshooting your application inside a container. 
+   - Wait for the shell prompt to appear. This is the Container App Console, which is useful for troubleshooting your application inside a container.
    - Enter the following command to check NVIDIA GPU status including utilization, memory usage, and running processes: `nvidia-smi`
    - Now enter, `nslookup ollama.com`. Since we're in the container app console, you should see nslookup fail as the container doesn't have access to network access tools.
 
 3. **Check out the Debug Console**
    We'll now explore the debug console which helps you troubleshoot when you can't connect to the target container and comes pre-installed with a number of tools such as network connectivity tools. These can be used to verify connectivity to your AI model endpoints if you run into issues pulling models or calling APIs from within your container app.
    - At the top of the page, choose **Debug** and repeat steps 1 and 2 from Task 4.
-   - Now enter, `nslookup ollama.com` – verifies DNS name resolution to ollama.com
+   - Now enter, `nslookup ollama.com` – verifies DNS name resolution to Ollama.
 
 ---
 

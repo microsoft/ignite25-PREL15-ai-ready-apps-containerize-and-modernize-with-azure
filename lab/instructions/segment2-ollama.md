@@ -218,7 +218,7 @@ You'll see the response stream in real-time as the model generates text.
 
 Both commands will return detailed metadata about the specified model, including its parameters, architecture, and system requirements.
 
-> Tip: For production deployments, you can deploy your inferencing server applications (in this case the Ollama app) in a virtual network integrated environment or behind private endpoints. This ensures your data is secure which is particularly important if you have trained your own models with sensitive information.
+> Tip: For production deployments, you can deploy your inferencing server applications (in this case the Ollama app) an environment integrated with your own virtual networks or behind private endpoints. You can also add managed identity rules for who can access the app. This keeps model traffic on trusted networks and ensures only authorized callers can reach sensitive data.
 
 ---
 
