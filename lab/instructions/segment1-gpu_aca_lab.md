@@ -186,15 +186,12 @@ Azure Container Apps serverless GPUs automatically scale your application to zer
    - Click **Connect**
    - Wait for the shell prompt to appear. This is the Container App Console, which is useful for troubleshooting your application inside a container. 
    - Enter the following command to check NVIDIA GPU status including utilization, memory usage, and running processes: `nvidia-smi`
-   - Now enter, `nslookup huggingface.co`. Since we're in the container app console, you should see nslookup fail as the container doesn't have access to network access tools.
+   - Now enter, `nslookup ollama.com`. Since we're in the container app console, you should see nslookup fail as the container doesn't have access to network access tools.
 
 3. **Check out the Debug Console**
    We'll now explore the debug console which helps you troubleshoot when you can't connect to the target container and comes pre-installed with a number of tools such as network connectivity tools. These can be used to verify connectivity to your AI model endpoints if you run into issues pulling models or calling APIs from within your container app.
-   - At the top of the page, choose **Debug** and repeat steps 1 and 2 for Task 4.
-   - Quick AI endpoint connectivity checks
-      - DNS: `nslookup huggingface.co` (or your Azure OpenAI endpoint) – verifies name resolution
-      - TCP reachability: `tcpping huggingface.co 443` – confirms you can open HTTPS to model registry
-      - Path / latency: `traceroute huggingface.co` – identifies network hops if downloads are slow
+   - At the top of the page, choose **Debug** and repeat steps 1 and 2 from Task 4.
+   - Now enter, `nslookup ollama.com` – verifies DNS name resolution to ollama.com
 
 ---
 
