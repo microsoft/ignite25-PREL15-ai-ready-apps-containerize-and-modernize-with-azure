@@ -131,7 +131,7 @@ You should see all three models with the **latest** digest.
 
 ## Task 3 - Compare Model Quality with Prompt Pack
 
-Use the console  to run these prompts against each model. The goal is to spot differences across model sizes.
+Use the console  to run these prompts against each model. The goal is to spot differences across the models.
 
  ```bash
  ollama run smollm2:1.7b "Explain the concept of vector databases to a new data engineer in under three sentences."
@@ -225,6 +225,17 @@ Both commands will return detailed metadata about the specified model, including
 
 ---
 
+## Persist models and reduce cold starts in production
+
+Serverless scaling in Azure Container Apps are great as they can autoscale into zero. However, the storage isn't persisted which means you have to redownload models after each scale-to-zero event which can cause significant coldstart. Below, are patterns we see customers adopt to improve their cold start times in production. These are also our recommendations.
+
+1. Add an [Azure Files volume mount](https://learn.microsoft.com/azure/container-apps/storage-mounts-azure-files?tabs=bash) to your Azure Container App - By adding a volume mount, your models can be stored persistently, preventing the need to redownload them after scaling to zero. Instead, models are loaded from the mounted volume, significantly reducing cold start times. For an Ollama contianer image, you would mount the volume at `/var/lib/ollama`.
+1. Customers also will set cron scalars and other scalars to ensure that the GPUs are pre-warmed prior to expected traffic spikes.
+1. Use Azure Container Registry artifact streaming to enable your container to startup faster by streaming layers on demand.
+1. Set a minimum replica count during business hours - By configuring your Container App to maintain at least one running replica during peak usage times, you can ensure that the application is always ready to handle requests without the latency associated with cold starts.
+
+---
+
 ## Wrap-Up
 
 - ✅ Ollama now runs inside your GPU-backed Container App with external ingress
@@ -233,4 +244,3 @@ Both commands will return detailed metadata about the specified model, including
 - ✅ You called the Ollama REST API using multiple tools
 
 **Next steps:** Consider layering Azure API Management or Dapr in front of Ollama, adding caching (Redis), and wiring Application Insights traces for end-to-end observability.
-

@@ -144,7 +144,30 @@ In this part, you will:
 
 ---
 
-### Task 3 - Monitor GPU Performance
+### Task 3 - Keep One Replica Warm (Reduce Cold Start)
+
+Azure Container Apps serverless GPUs automatically scale your application to zero when idle to save costs. Scaling back out from zero triggers a GPU cold start: provisioning the container, initializing drivers, and loading model assets adding cold start time to the first request. To ensure the lab completes without waiting on cold starts, you'll configure a minimum replica of 1 so one GPU instance stays warm during the exercise. We'll discuss cold start improvement strategies later in the lab.
+
+1. **Open Scale settings:**
+   - In the Azure Portal, navigate to **Resource Groups > my-gpu-demo-group > my-gpu-demo-app**.
+   - In the left menu under **Application**, select **Scale**.
+
+2. **Set replica counts:**
+   - **Min replicas:** `1`
+   - **Max replicas:** `3`
+   - Save (this may create a new revision if scaling configuration changes require it).
+
+3. **Confirm running replica:**
+   - Go to **Revisions and replicas**.
+   - Ensure the latest revision shows **Running** with at least one replica.
+
+**Result:** A single GPU-backed container remains online, eliminating cold start delays for subsequent image generations during the lab.
+
+> [!Note] Setting **Min replicas = 1** keeps a GPU instance allocated at all times which is great for eliminating cold starts, but it incurs continuous GPU charges. This is fine for the lab, but is important to keep in mind when doing your own development after this lab.
+
+---
+
+### Task 4 - Monitor GPU Performance
 
 **Description:** Azure Container Apps provides tools to monitor your GPU utilization and performance. In this task, you'll use the console to access your running container and check GPU metrics using NVIDIA's monitoring tools.
 
@@ -163,60 +186,17 @@ In this part, you will:
    
    - In the **Choose startup command** dialog, select `/bin/bash`
    - Click **Connect**
-   - Wait for the shell prompt to appear
+   - Wait for the shell prompt to appear. This is the Container App Console, which is useful for troubleshooting your application inside a container. 
+   - Enter the following command to check NVIDIA GPU status including utilization, memory usage, and running processes: `nvidia-smi`
+   - Now enter, `nslookup huggingface.co`. Since we're in the container app console, you should see nslookup fail as the container doesn't have access to network access tools.
 
 3. **Check out the Debug Console**
-   - At the top of the page, choose **Debug** and repeat steps 1 and 2.
-
-### Task 4 - Optimize GPU Cold Start (Advanced)
-
-**Description:** GPU cold start (the time it takes for the first request after idle) can be significant. In this task, you'll learn about strategies to improve cold start performance for production applications using the Azure Portal.
-
-1. **Navigate to Scale and Replicas settings:**
-   
-   - In the Azure Portal, go to your container app: `my-gpu-demo-app`
-   - In the left menu, under **Application**, select **Scale**
-
-2. **Enable minimum replicas (reduce cold start):**
-   
-   Configure your app to always keep at least one replica running. This eliminates cold starts but incurs continuous costs.
-   
-   - Under **Scale** on the left, set:
-     - **Min replicas:** `1`
-     - **Max replicas:** `3`
-   
-   
-   **Note:** With minimum replicas set to 1, at least one instance with GPU will always be running, eliminating cold starts but increasing costs.
-
-3. **Configure HTTP scaling rules:**
-   
-   Increase up HTTP-based scaling to handle varying loads:
-   
-   - Click on the existing **Scale rule**
-
-      - Edit:
-     - **Rule name:** `http-scaler`
-     - **Type:** `HTTP scaling`
-     - **Concurrent requests:** `100`
-   
-   - Click **Add Scale Rule**
-   - Click **Save as New Revision** to deploy the revision
-   
-   This scales your app based on concurrent HTTP requests, allowing it to handle traffic spikes while scaling down during low usage (but never below 1 replica).
-
-3. **Review cold start optimization best practices:**
-   
-   Additional strategies to consider for production:
-   - **Artifact streaming**: Reduces container image pull time (covered in Microsoft docs)
-   - **Model preloading**: Ensure your AI model is loaded into GPU memory on startup
-   - **Warm-up requests**: Send a dummy request after deployment to initialize the GPU
-   - **Horizontal scaling**: Use multiple replicas to distribute load
-   
-   For detailed guidance, see: https://learn.microsoft.com/en-us/azure/container-apps/gpu-serverless-overview#improve-gpu-cold-start
-
-4. **Test improved response times:**
-   
-   With minimum replicas enabled, generate a new image and notice the faster response time compared to your initial test.
+   We'll now explore the debug console which helps you troubleshoot when you can't connect to the target container and comes pre-installed with a number of tools such as network connectivity tools. These can be used to verify connectivity to your AI model endpoints if you run into issues pulling models or calling APIs from within your container app.
+   - At the top of the page, choose **Debug** and repeat steps 1 and 2 for Task 4.
+   - Quick AI endpoint connectivity checks
+      - DNS: `nslookup huggingface.co` (or your Azure OpenAI endpoint) – verifies name resolution
+      - TCP reachability: `tcpping huggingface.co 443` – confirms you can open HTTPS to model registry
+      - Path / latency: `traceroute huggingface.co` – identifies network hops if downloads are slow
 
 ---
 
@@ -225,51 +205,51 @@ In this part, you will:
 ### Common Issues and Solutions
 
 - **"Workload profile not found" or GPU option not available**
-  - **Cause:** GPU workload profiles are not available in your selected region, or GPU quota hasn't been approved.
-  - **Solution:** 
-    1. Ensure you're using a supported region: West US 3, Sweden Central, East US 2, or North Central US.
-    2. Verify the GPU checkbox is available in the Container creation wizard
-    3. If GPU options don't appear, the quota may not be approved for your subscription (should be pre-configured in Skillable)
+   - **Cause:** GPU workload profiles are not available in your selected region, or GPU quota hasn't been approved.
+   - **Solution:**
+      1. Ensure you're using a supported region: West US 3, Sweden Central, East US 2, or North Central US.
+      2. Verify the GPU checkbox is available in the Container creation wizard.
+      3. If GPU options don't appear, the quota may not be approved for your subscription (should be pre-configured in Skillable).
 
 - **Very slow first image generation (2+ minutes)**
-  - **Cause:** This is expected GPU cold start behavior. The GPU, drivers, and AI model all need to initialize.
-  - **Solution:** 
-    1. For production, enable minimum replicas (see Task 7)
-    2. Implement artifact streaming to reduce image pull time
-    3. Consider using warm-up requests after deployment
-    4. Wait 60-90 seconds for the first generation - subsequent ones will be much faster
+   - **Cause:** This is expected as the app hasn't been optimized for cold start yet. The GPU, drivers, and AI model all need to initialize.
+   - **Solution:**
+      1. For production, enable minimum replicas (see Task 3).
+      2. Implement artifact streaming to reduce image pull time.
+      3. Consider using warm-up requests after deployment.
+      4. Wait 60-90 seconds for the first generation—subsequent ones will be much faster.
 
 - **"Failed to pull image" error**
-  - **Cause:** Network connectivity issues or incorrect image name.
-  - **Solution:** 
-    1. Verify the image name is exactly: `mcr.microsoft.com/k8se/gpu-quickstart:latest`
-    2. In the Portal, go to your container app → **Revision management** → select your revision
-    3. Check **Logs** in the Monitoring section for detailed error messages
-    4. If the issue persists, try recreating the container app with the correct image details
+   - **Cause:** Network connectivity issues or incorrect image name.
+   - **Solution:**
+      1. Verify the image name is exactly: `mcr.microsoft.com/k8se/gpu-quickstart:latest`.
+      2. In the Portal, go to your container app → **Revision management** → select your revision.
+      3. Check **Logs** in the Monitoring section for detailed error messages.
+      4. If the issue persists, try recreating the container app with the correct image details.
 
 - **Application is running but images aren't generating**
-  - **Cause:** The GPU may not be properly allocated or the model failed to load.
-  - **Solution:** 
-    1. Connect to the console (Task 3) and run `nvidia-smi` to verify GPU is accessible
-    2. In the Portal, navigate to **Monitoring** → **Log stream** to check application logs for errors
-    3. Check **Metrics** to see if replicas are running
-    4. Try restarting: Go to **Revision management** → click the **...** menu → **Restart**
+   - **Cause:** The GPU may not be properly allocated or the model failed to load.
+   - **Solution:**
+      1. Connect to the console (Task 3) and run `nvidia-smi` to verify GPU is accessible.
+      2. In the Portal, navigate to **Monitoring** → **Log stream** to check application logs for errors.
+      3. Check **Metrics** to see if replicas are running.
+      4. Try restarting: Go to **Revision management** → click the **...** menu → **Restart**.
 
 - **"Cannot access container console" error**
-  - **Cause:** The replica may not be running or console access is temporarily unavailable.
-  - **Solution:** 
-    1. In the Portal, go to **Revision management** and verify the revision status is "Running"
-    2. Check that at least one replica is active under **Replicas**
-    3. Wait a moment and try refreshing the Console page
-    4. If the issue persists, try the **Log stream** option instead under **Monitoring**
+   - **Cause:** The replica may not be running or console access is temporarily unavailable.
+   - **Solution:**
+      1. In the Portal, go to **Revision management** and verify the revision status is "Running".
+      2. Check that at least one replica is active under **Replicas**.
+      3. Wait a moment and try refreshing the Console page.
+      4. If the issue persists, try the **Log stream** option instead under **Monitoring**.
 
 - **High costs / unexpected billing**
-  - **Cause:** Minimum replicas are enabled (from Task 4), keeping GPU resources running continuously.
-  - **Solution:** 
-    1. In the Portal, go to **Scale and replicas**
-    2. Edit your revision and change **Min replicas** to `0` to allow scaling to zero
-    3. Deploy the change
-    4. Always delete the resource group when done with the lab to stop all charges
+   - **Cause:** Minimum replicas are enabled (from Task 3), keeping GPU resources running continuously.
+   - **Solution:**
+      1. In the Portal, go to **Scale and replicas**.
+      2. Edit your revision and change **Min replicas** to `0` to allow scaling to zero.
+      3. Deploy the change.
+      4. Always delete the resource group when done with the lab to stop all charges.
 
 ---
 
