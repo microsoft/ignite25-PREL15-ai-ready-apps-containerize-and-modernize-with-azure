@@ -98,11 +98,12 @@ The lab is organized into the following segments:
 
 - **welcome-screen.md** - Lab introduction and overview
 - **segment0-ai-gpu-playbook.md** - AI and GPU playbook: Understanding GPU-accelerated AI workloads
-- **skillable_langchain_aca_lab_1.md** - Dynamic Sessions lab: Azure OpenAI with LangChain
-- **segment3-ollama.md** - Ollama setup: Run open-source LLMs on GPU containers
+- **segment1-gpu_aca_lab.md** - GPU Container Apps lab
+- **segment2-ollama.md** - Ollama setup: Run open-source LLMs on GPU containers
+- **segment3-langchain_aca_lab.md** - Dynamic Sessions lab: Azure OpenAI with LangChain
 - **segment4-mcp-shell.md** - MCP Shell integration: Connect AI agents to tools
 - **segment5-goose-agent.md** - Goose AI agent: Build autonomous coding agents
-- **skillable_gpu_aca_lab.md** - GPU Container Apps lab (alternative track)
+
 
 ### Key Files
 
