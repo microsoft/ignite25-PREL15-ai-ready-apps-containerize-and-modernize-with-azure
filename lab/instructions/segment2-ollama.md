@@ -185,38 +185,48 @@ curl -s $OLLAMA_URL/api/tags | jq
 ```
 This will display all models currently available on your Ollama server.
 
-### 4.3 Generate text via streaming inference
-Run the following command to test text generation:
-
-- **Using curl:**
-
-  ```bash
-  curl -N $OLLAMA_URL/api/generate \
-  -H "Content-Type: application/json" \
-  -d '{"model":"smollm2:1.7b","prompt":"Explain the concept of vector databases."}'
-  ```
-You'll see the response stream in real-time as the model generates text.
-
-
-### 4.4 Show model metadata (pick any deployed model)
+### 4.3 Show model metadata (pick any deployed model)
 
 - **Using curl:**
 
   ```bash
   curl $OLLAMA_URL/api/show \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-oss:20b"}'
-  ```
-
-- **Using wget:**
-
-  ```bash
-  wget -qO- --method=POST --header="Content-Type: application/json" \
-  --body-data='{"model":"smollm2:1.7b"}' \
-  $OLLAMA_URL/api/show    
+  -d '{"model":"deepseek-r1:14b"}'
   ```
 
 Both commands will return detailed metadata about the specified model, including its parameters, architecture, and system requirements.
+
+### 4.4 Generate a streamed response
+
+Run the following command to test text generation using curl:
+
+- **Using curl:**
+
+  ```bash
+  curl $OLLAMA_URL/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek-r1:14b",
+    "prompt": "Explain the concept of vector databases."
+  }'
+  ```
+
+  You'll see the response stream in real-time as the model generates text.
+
+### 4.5 Return just the response
+
+- By running this command without streaming and parsing the JSON response, you can extract the generated text:
+
+  ```bash
+    curl $OLLAMA_URL/api/generate \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "deepseek-r1:14b",
+        "prompt": "Explain the concept of vector databases.",
+        "stream": false
+      }' | jq -r '.response'
+  ```
 
 > Tip: For production deployments, you can deploy your inferencing server applications (in this case the Ollama app) an environment integrated with your own virtual networks or behind private endpoints. You can also add managed identity rules for who can access the app. This keeps model traffic on trusted networks and ensures only authorized callers can reach sensitive data.
 
