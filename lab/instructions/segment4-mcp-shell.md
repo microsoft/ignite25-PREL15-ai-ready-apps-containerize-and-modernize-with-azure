@@ -2,6 +2,31 @@
 
 > Audience: platform and infra engineers who will provision and operate shell based session pools using MCP to enable agents and tools to connect and run shell commands remotely.
 
+## Preparing for future lab sections
+
+Kick off the longer-running Goose deployment now so it finishes by the time you need it later in the lab:
+
+1. Open **Windows Terminal** (or the integrated VS Code terminal) and choose the **Ubuntu** shell.
+2. Navigate to the Goose sample folderauthenticate with Azure Developer CLI.
+
+  ```bash
+  cd /mnt/c/Users/LabUser/Documents/ACASamples/goose-on-aca
+  ```
+
+3. Authenticate with Azure Developer CLI.
+
+  ```
+  azd auth login
+  ```
+
+4. Provision the Goose infrastructure.
+
+  ```bash
+  azd up
+  ```
+
+Leave this terminal running; you'll return to the MCP instructions in the next sections while `azd up` completes.
+
 ## Overview
 This segment walks through creating a Shell container type Session Pool with the MCP Server enabled, retrieving the MCP endpoint and API key, and exercising the MCP JSON-RPC tools to launch and run remote shells.
 
@@ -25,7 +50,7 @@ If the wsl terminal is not already open, click on the down arrow next to the **+
 
 ## Clear credentials and Login to Azure
 
-Use the wsl terminal for the folllowing commands.
+Use the WSL terminal for the following commands.
 
 Clear the current account credentials and re-login to VS Code. If prompted, Use the credentials from the Resources tab in the lab to login.
 
@@ -43,7 +68,7 @@ export SUBSCRIPTION_ID=$(az account show --query id --output tsv | tr -d '\r')
 echo $SUBSCRIPTION_ID
 ```
 
-Set the variables used in this procedure.
+Set the remaining variables used in this procedure:
 
 ```bash
 export RESOURCE_GROUP=my-shell-session-rg
