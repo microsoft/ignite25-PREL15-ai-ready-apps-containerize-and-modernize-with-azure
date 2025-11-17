@@ -22,7 +22,7 @@ In this part, you will:
 - Handles tool selection and parameter passing automatically
 - Provides built-in retry logic, error handling, and response parsing
 
-> [!Note] LangChain is the focus for this lab, but the same patterns apply to other agents. Microsoft's newly released [Microsoft Agent Framework](https://learn.microsoft.com/agent-framework/overview/agent-framework-overview) is a great alternative, and you'll experiment with [Goose](https://github.com/block/goose) later in the lab as well.
+> [!Note] LangChain is the focus for this section of the lab, but the same patterns apply to other agents. Microsoft's newly released [Microsoft Agent Framework](https://learn.microsoft.com/agent-framework/overview/agent-framework-overview) is a great alternative, and you'll experiment with [Goose](https://github.com/block/goose) later in the lab as well.
 
 ### What are Code Interpreters?
 

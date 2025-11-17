@@ -24,8 +24,6 @@ Estimated duration: **30 minutes**
 - Existing Container App `my-gpu-demo-app` deployed in `my-gpu-demo-group`
 - Azure subscription with GPU workload profile enabled (already set up in the Skillable lab)
 
-> ⚠️ **Cost note:** Leaving the GPU-enabled revision running will continue to accrue charges. Remember to scale to zero or delete the resource group after completing the lab.
-
 ---
 
 ## Task 1 - Reconfigure the GPU App to Run Ollama
@@ -57,7 +55,6 @@ Estimated duration: **30 minutes**
     - Select **Add** and provide the following environment variables:
 
         - Set **Name** to `OLLAMA_HOST`, choose **Manual entry**, and enter the value `0.0.0.0`.
-        - Add another environment variable with **Manual entry** named `OLLAMA_NUM_PARALLEL`, set the value to `2`. This will allow Ollama to process multiple inference requests in parallel.
 
     - Click **Save as a new revision**. 
     - This will take a few moments to deploy the new revision. Select the notification bell in the top right to see the status of the ongoing deployment.
@@ -221,7 +218,7 @@ You'll see the response stream in real-time as the model generates text.
 
 Both commands will return detailed metadata about the specified model, including its parameters, architecture, and system requirements.
 
-> 🔐 Tip: For production deployments, restrict ingress to private endpoints or secure the API with Azure Container Apps authentication.
+> Tip: For production deployments, you can deploy your inferencing server applications (in this case the Ollama app) in a virtual network integrated environment or behind private endpoints. This ensures your data is secure which is particularly important if you have trained your own models with sensitive information.
 
 ---
 
@@ -243,4 +240,7 @@ Serverless scaling in Azure Container Apps are great as they can autoscale into 
 - ✅ Prompt pack highlights capability differences across 1.7B, 14B, and 20B parameter models
 - ✅ You called the Ollama REST API using multiple tools
 
-**Next steps:** Consider layering Azure API Management or Dapr in front of Ollama, adding caching (Redis), and wiring Application Insights traces for end-to-end observability.
+## Additional resources
+
+- [Gpt-oss on Azure Container Apps](https://techcommunity.microsoft.com/blog/appsonazureblog/open-ais-gpt-oss-models-on-azure-container-apps-serverless-gpus/4440836)
+- [Deepseek-r1 on Azure Container Apps](https://techcommunity.microsoft.com/blog/appsonazureblog/deepseek-r1-on-azure-container-apps-serverless-gpus/4371463)

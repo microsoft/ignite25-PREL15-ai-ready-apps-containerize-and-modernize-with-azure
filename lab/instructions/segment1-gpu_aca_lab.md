@@ -149,13 +149,11 @@ In this part, you will:
 Azure Container Apps serverless GPUs automatically scale your application to zero when idle to save costs. Scaling back out from zero triggers a GPU cold start: provisioning the container, initializing drivers, and loading model assets adding cold start time to the first request. To ensure the lab completes without waiting on cold starts, you'll configure a minimum replica of 1 so one GPU instance stays warm during the exercise. We'll discuss cold start improvement strategies later in the lab.
 
 1. **Open Scale settings:**
-   - In the Azure Portal, navigate to **Resource Groups > my-gpu-demo-group > my-gpu-demo-app**.
    - In the left menu under **Application**, select **Scale**.
 
 2. **Set replica counts:**
    - **Min replicas:** `1`
-   - **Max replicas:** `3`
-   - Save (this may create a new revision if scaling configuration changes require it).
+   - Select **Save as a new revision**.
 
 3. **Confirm running replica:**
    - Go to **Revisions and replicas**.
@@ -163,7 +161,7 @@ Azure Container Apps serverless GPUs automatically scale your application to zer
 
 **Result:** A single GPU-backed container remains online, eliminating cold start delays for subsequent image generations during the lab.
 
-> [!Note] Setting **Min replicas = 1** keeps a GPU instance allocated at all times which is great for eliminating cold starts, but it incurs continuous GPU charges. This is fine for the lab, but is important to keep in mind when doing your own development after this lab.
+> [!Note] Setting **Min replicas = 1** keeps a GPU instance allocated at all times which is great for eliminating cold starts, but it incurs continuous GPU charges. This is fine for the lab, but is important to keep in mind when doing your own development.
 
 ---
 
@@ -207,9 +205,7 @@ Azure Container Apps serverless GPUs automatically scale your application to zer
 - **"Workload profile not found" or GPU option not available**
    - **Cause:** GPU workload profiles are not available in your selected region, or GPU quota hasn't been approved.
    - **Solution:**
-      1. Ensure you're using a supported region: West US 3, Sweden Central, East US 2, or North Central US.
-      2. Verify the GPU checkbox is available in the Container creation wizard.
-      3. If GPU options don't appear, the quota may not be approved for your subscription (should be pre-configured in Skillable).
+      1. Ensure you're using West US 3.
 
 - **Very slow first image generation (2+ minutes)**
    - **Cause:** This is expected as the app hasn't been optimized for cold start yet. The GPU, drivers, and AI model all need to initialize.
@@ -242,14 +238,6 @@ Azure Container Apps serverless GPUs automatically scale your application to zer
       2. Check that at least one replica is active under **Replicas**.
       3. Wait a moment and try refreshing the Console page.
       4. If the issue persists, try the **Log stream** option instead under **Monitoring**.
-
-- **High costs / unexpected billing**
-   - **Cause:** Minimum replicas are enabled (from Task 3), keeping GPU resources running continuously.
-   - **Solution:**
-      1. In the Portal, go to **Scale and replicas**.
-      2. Edit your revision and change **Min replicas** to `0` to allow scaling to zero.
-      3. Deploy the change.
-      4. Always delete the resource group when done with the lab to stop all charges.
 
 ---
 
